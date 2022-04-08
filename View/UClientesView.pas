@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil;
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
+  UCliente;
 
 type
   TfrmClientes = class(TForm)
@@ -64,10 +65,17 @@ type
 
      // Variáveis de Classes
      vEstadoTela : TEstadoTela;
+     vObjCliente : TCliente;
 
      procedure CamposEnabled(pOpcao : Boolean);
      procedure LimpaTela;
      procedure DefineEstadoTela;
+
+     function ProcessaConfirmacao : Boolean;
+     function ProcessaInclusao    : Boolean;
+     function ProcessaCliente     : Boolean;
+     function ProcessaPessoa      : Boolean;
+     function ProcessaEndereco    : Boolean;
   public
     { Public declarations }
   end;
@@ -268,7 +276,7 @@ end;
 
 procedure TfrmClientes.btnConfirmarClick(Sender: TObject);
 begin
-   // Confirmar
+   ProcessaConfirmacao;
 end;
 
 procedure TfrmClientes.btnCancelarClick(Sender: TObject);
@@ -306,6 +314,125 @@ end;
 procedure TfrmClientes.FormCreate(Sender: TObject);
 begin
    vEstadoTela := etPadrao;
+end;
+
+function TfrmClientes.ProcessaConfirmacao: Boolean;
+begin
+   Result := False;
+   try
+      case vEstadoTela of
+         etIncluir : Result := ProcessaInclusao;
+
+      end;
+
+      if not Result then
+         Exit;
+   except
+      on E: Exception do
+         TMessageUtil.Alerta(E.Message)
+   end;
+
+   Result := True;
+end;
+
+function TfrmClientes.ProcessaInclusao: Boolean;
+begin
+   try
+      Result := False;
+
+      if ProcessaCliente then
+      begin
+         TMessageUtil.Informacao('Cliente cadastrado com sucesso.'#13+
+         'Codigo cadastrado: ');
+
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+
+         Result := True;
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao incluir os dados do cliente [View]: '#13+
+         e.Message);
+      end;
+   end;
+end;
+
+function TfrmClientes.ProcessaCliente: Boolean;
+begin
+   try
+      Result := False;
+      if (ProcessaPessoa) and
+         (ProcessaEndereco) then
+      begin
+         // Gravação no BD
+
+         Result := True;
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao gravar os dados do cliente [View]: '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+function TfrmClientes.ProcessaPessoa: Boolean;
+begin
+   try
+      Result := False;
+
+//      if not ValidaCliente then
+//         Exit;
+
+      if vEstadoTela = etIncluir then
+      begin
+         if vObjCliente = nil then
+            vObjCliente := TCliente.Create;
+      end;
+      else
+      if vEstadoTela = etAlterar then
+      begin
+         if vObjCliente = nil then
+            Exit;
+      end;
+      if (vObjCliente = nil) then
+         Exit;
+
+      vObjCliente.Tipo_Pessoa    := 0; // Cliente
+      vObjClient.Nome            := edtNome.Text;
+      vObjClient.Fisica_Juridica := rdgTipoPessoa.ItemIndex
+
+      
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao processar os dados da Pessoa [View]. '#13+
+         e.Message);
+      end;
+   end;
+end;
+
+function TfrmClientes.ProcessaEndereco: Boolean;
+begin
+   try
+      Result := False;
+
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao preencher os dados de endereço do cliente [View]. '#13+
+         e.Message)
+      end;
+   end;
 end;
 
 end.
