@@ -5,7 +5,7 @@ interface
 uses SysUtils, Classes, UPessoa;
 
 type
-   TCliente = Class(TPessoa)
+   TCliente = Class(TPessoa);
       private
          vBloqueado : Boolean;
       public
@@ -20,7 +20,7 @@ implementation
 
 constructor TCliente.Create;
 begin
-   vBloqueado := False;
+   vBloqueado
 end;
 
 

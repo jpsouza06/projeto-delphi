@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
-  UCliente;
+  UCliente, UPessoaController;
 
 type
   TfrmClientes = class(TForm)
@@ -71,11 +71,19 @@ type
      procedure LimpaTela;
      procedure DefineEstadoTela;
 
+     // Carrega Dados Padrão na Tela
+     procedure CarregaDadosTela;
+
      function ProcessaConfirmacao : Boolean;
      function ProcessaInclusao    : Boolean;
+     function ProcessaConsulta    : Boolean;
      function ProcessaCliente     : Boolean;
+
+
      function ProcessaPessoa      : Boolean;
      function ProcessaEndereco    : Boolean;
+
+     function ValidaCliente       : Boolean;
   public
     { Public declarations }
   end;
@@ -235,6 +243,33 @@ begin
          if edtNome.CanFocus then
             edtNome.SetFocus;
        end;
+
+       etConsultar:
+       begin
+          stbBarraStatus.Panels[0].Text := 'Consulta';
+
+          CamposEnabled(False);
+
+          if (edtCodigo.Text <> EmptyStr) then
+          begin
+             edtCodigo.Enabled  := False;
+             btnAlterar.Enabled := True;
+             btnExcluir.Enabled := True;
+             btnListar.Enabled  := True;
+             btnConfirmar.Enabled := False;
+
+             if (btnAlterar.CanFocus) then
+                btnAlterar.SetFocus;
+          end
+          else
+          begin
+             lblCodigo.Enabled := True;
+             edtCodigo.Enabled := True;
+
+             if (edtCodigo.CanFocus) then
+                edtCodigo.SetFocus;
+          end;
+       end;
     end;
 end;
 
@@ -321,7 +356,8 @@ begin
    Result := False;
    try
       case vEstadoTela of
-         etIncluir : Result := ProcessaInclusao;
+         etIncluir: Result := ProcessaInclusao;
+         etConsultar: Result := ProcessaConsulta;
 
       end;
 
@@ -343,7 +379,7 @@ begin
       if ProcessaCliente then
       begin
          TMessageUtil.Informacao('Cliente cadastrado com sucesso.'#13+
-         'Codigo cadastrado: ');
+         'Codigo cadastrado: '+ IntToStr(vObjCliente.Id));
 
          vEstadoTela := etPadrao;
          DefineEstadoTela;
@@ -368,6 +404,7 @@ begin
          (ProcessaEndereco) then
       begin
          // Gravação no BD
+         TPessoaController.getInstancia.GravaPessoa(vObjCliente);
 
          Result := True;
       end;
@@ -386,14 +423,14 @@ begin
    try
       Result := False;
 
-//      if not ValidaCliente then
-//         Exit;
+      if not ValidaCliente then
+         Exit;
 
       if vEstadoTela = etIncluir then
       begin
          if vObjCliente = nil then
             vObjCliente := TCliente.Create;
-      end;
+      end
       else
       if vEstadoTela = etAlterar then
       begin
@@ -404,8 +441,11 @@ begin
          Exit;
 
       vObjCliente.Tipo_Pessoa    := 0; // Cliente
-      vObjClient.Nome            := edtNome.Text;
-      vObjClient.Fisica_Juridica := rdgTipoPessoa.ItemIndex
+      vObjCliente.Nome            := edtNome.Text;
+      vObjCliente.Fisica_Juridica := rdgTipoPessoa.ItemIndex;
+      vObjCliente.Ativo           := chkAtivo.Checked;
+      vObjCliente.IdentificadorPessoa := edtCPFCNPJ.Text;
+
       Result := True;
    except
       on E: Exception do
@@ -431,6 +471,81 @@ begin
          e.Message)
       end;
    end;
+end;
+
+function TfrmClientes.ValidaCliente: Boolean;
+begin
+   Result := False;
+
+   if (edtNome.Text = EmptyStr) then
+   begin
+      TMessageUtil.Alerta('Nome do cliente não pode ficar em branco.');
+
+      if edtNome.CanFocus then
+         edtNome.SetFocus;
+      Exit;
+   end;
+
+   Result := True;
+end;
+
+function TfrmClientes.ProcessaConsulta: Boolean;
+begin
+   try
+      Result := False;
+
+      if (edtCodigo.Text = EmptyStr) then
+      begin
+         TMessageUtil.Alerta('Código do cliente não pode ficar em branco.');
+
+         if (edtCodigo.CanFocus) then
+            edtCodigo.SetFocus;
+
+         Exit;
+      end;
+
+      vObjCliente :=
+         TCliente( TPessoaController.getInstancia.BuscaPessoa(
+            StrToIntDef(edtCodigo.Text, 0)));
+
+      if (vObjCliente <> nil) then
+         CarregaDadosTela
+      else
+      begin
+         TMessageUtil.Alerta(
+            'Nenhum cliente encontrado para o código informado.');
+
+         LimpaTela;
+
+         if (edtCodigo.CanFocus) then
+            edtCodigo.SetFocus;
+
+         Exit;
+      end;
+
+      DefineEstadoTela;
+
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados do cliente [View]. '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+procedure TfrmClientes.CarregaDadosTela;
+begin
+   if (vObjCliente = nil) then
+      Exit;
+
+   edtCodigo.Text          := IntToStr(vObjCliente.Id);
+   rdgTipoPessoa.ItemIndex := vObjCliente.Fisica_Juridica;
+   edtNome.Text            := vObjCliente.Nome;
+   chkAtivo.Checked        := vObjCliente.Ativo;
+   edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;  
 end;
 
 end.

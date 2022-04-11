@@ -5,7 +5,7 @@ interface
 uses SysUtils, Classes;
 
 type
-   TPessoa = Class(TPersistent);
+   TPessoa = Class(TPersistent)
 
       private
          vId                  : Integer;
@@ -46,7 +46,7 @@ begin
 
 end;
 
-procedure TColPessoa.Adicionar(pPessoa: TPessoa);
+procedure TColPessoa.Adiciona(pPessoa: TPessoa);
 
 begin
    Self.Add(TPessoa(pPessoa));

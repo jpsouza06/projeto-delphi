@@ -29,9 +29,9 @@ end;
 constructor TPessoaDAO.Create(pConexao: TSQLConnection);
 begin
    inherited Create;
-   vEntidade := 'PESSOA'
+   vEntidade := 'PESSOA';
    vConexao  := pConexao;
-   vClass    := TPessoa
+   vClass    := TPessoa;
 end;
 
 function TPessoaDAO.Insere(pPessoa: TPessoa): Boolean;
