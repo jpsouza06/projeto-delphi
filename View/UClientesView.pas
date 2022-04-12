@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
-  UCliente, UPessoaController;
+  UCliente, UPessoaController, UEndereco;
 
 type
   TfrmClientes = class(TForm)
@@ -58,14 +58,16 @@ type
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure edtCodigoExit(Sender: TObject);
 
    private
     { Private declarations }
      vKey : Word;
 
      // Variáveis de Classes
-     vEstadoTela : TEstadoTela;
-     vObjCliente : TCliente;
+     vEstadoTela     : TEstadoTela;
+     vObjCliente     : TCliente;
+     vObjColEndereco : TColEndereco;
 
      procedure CamposEnabled(pOpcao : Boolean);
      procedure LimpaTela;
@@ -77,6 +79,7 @@ type
      function ProcessaConfirmacao : Boolean;
      function ProcessaInclusao    : Boolean;
      function ProcessaAlteracao   : Boolean;
+     function ProcessaExclusao    : Boolean;
      function ProcessaConsulta    : Boolean;
      function ProcessaCliente     : Boolean;
 
@@ -84,7 +87,8 @@ type
      function ProcessaPessoa      : Boolean;
      function ProcessaEndereco    : Boolean;
 
-     function ValidaCliente       : Boolean;
+     function ValidaCliente  : Boolean;
+     function ValidaEndereco : Boolean;
   public
     { Public declarations }
   end;
@@ -173,31 +177,40 @@ procedure TfrmClientes.LimpaTela;
 var
    i : Integer;
 begin
-   for i := 0 to pred(ComponentCount) do
-   begin
-      // Se o campo for do tipo EDIT
-      if (Components[i] is TEdit) then
-         (Components[i] as TEdit).Text := EmptyStr;
-
-         // Se o campo for do tipo MASKEDIT
-      if (Components[i] is TMaskEdit) then   // Limpa o valor que esta no campo
-         (Components[i] as TMaskEdit).Text := EmptyStr;
-
-         // Se o campo for do tipo RADIOGROUP
-      if (Components[i] is TRadioGroup) then   // Então, define seu padrão 0
-         (Components[i] as TRadioGroup).ItemIndex := 0;
-
-         // Se o campo for do tipo COMBOBOX
-      if (Components[i] is TComboBox) then    // Então, define seu padrão -1
+   try
+      for i := 0 to pred(ComponentCount) do
       begin
-        (Components[i] as TComboBox).Clear;
-        (Components[i] as TComboBox).ItemIndex := -1;
-      end;
+         // Se o campo for do tipo EDIT
+         if (Components[i] is TEdit) then
+            (Components[i] as TEdit).Text := EmptyStr;
 
-         // Se o campo for do tipo CHECKBOX
-      if (Components[i] is TCheckBox) then   // Então, define seu padrão desmarcado
-         (Components[i] as TCheckBox).Checked := False;
+            // Se o campo for do tipo MASKEDIT
+         if (Components[i] is TMaskEdit) then   // Limpa o valor que esta no campo
+            (Components[i] as TMaskEdit).Text := EmptyStr;
+
+            // Se o campo for do tipo RADIOGROUP
+         if (Components[i] is TRadioGroup) then   // Então, define seu padrão 0
+            (Components[i] as TRadioGroup).ItemIndex := 0;
+
+            // Se o campo for do tipo COMBOBOX
+         if (Components[i] is TComboBox) then    // Então, define seu padrão -1
+         begin
+           (Components[i] as TComboBox).Clear;
+           (Components[i] as TComboBox).ItemIndex := -1;
+         end;
+
+            // Se o campo for do tipo CHECKBOX
+         if (Components[i] is TCheckBox) then   // Então, define seu padrão desmarcado
+            (Components[i] as TCheckBox).Checked := False;
+      end;
+   finally
+     if (vObjCliente <> nil) then
+     FreeAndNil(vObjCliente);
+
+     if (vObjColEndereco <> nil) then
+     FreeAndNil(vObjColEndereco);
    end;
+
 end;
 
 procedure TfrmClientes.DefineEstadoTela;
@@ -245,7 +258,7 @@ begin
             edtNome.SetFocus;
        end;
 
-       etAlterar;
+       etAlterar:
        begin
           stbBarraStatus.Panels[0].Text := 'Alteração';
 
@@ -260,6 +273,22 @@ begin
              if (chkAtivo.CanFocus) then
                 chkAtivo.SetFocus;
           end
+          else
+          begin
+             lblCodigo.Enabled := True;
+             edtCodigo.Enabled := True;
+
+             if (edtCodigo.CanFocus) then
+                edtCodigo.SetFocus;
+          end;
+       end;
+
+       etExcluir:
+       begin
+          stbBarraStatus.Panels[0].Text := 'Exclusão';
+
+          if (edtCodigo.Text <> EmptyStr) then
+             ProcessaExclusao
           else
           begin
              lblCodigo.Enabled := True;
@@ -431,7 +460,8 @@ begin
          (ProcessaEndereco) then
       begin
          // Gravação no BD
-         TPessoaController.getInstancia.GravaPessoa(vObjCliente);
+         TPessoaController.getInstancia.GravaPessoa(
+            vObjCliente, vObjColEndereco);
 
          Result := True;
       end;
@@ -485,9 +515,40 @@ begin
 end;
 
 function TfrmClientes.ProcessaEndereco: Boolean;
+var
+   xEndereco : TEndereco;
+   xID_Pessoa : Integer;
 begin
    try
       Result := False;
+
+      xEndereco := nil;
+      xID_Pessoa := 0;
+
+      if (not ValidaEndereco) then
+         Exit;
+
+      if (vObjColEndereco <> nil) then
+         FreeAndNil(vObjColEndereco);
+
+      vObjColEndereco := TColEndereco.Create;
+
+      if vEstadoTela = etAlterar then
+         xID_Pessoa := StrToIntDef(edtCodigo.Text, 0);
+
+
+
+      xEndereco               := TEndereco.Create;
+      xEndereco.ID_Pessoa     := xID_Pessoa;
+      xEndereco.Tipo_Endereco := 0;
+      xEndereco.Endereco      := edtEndereco.Text;
+      xEndereco.Numero        := edtNumero.Text;
+      xEndereco.Complemento   := edtComplemento.Text;
+      xEndereco.Bairro        := edtBairro.Text;
+      xEndereco.UF            := cmbUF.Text;
+      xEndereco.Cidade        := edtCidade.Text;
+
+      vObjColEndereco.Add(xEndereco);
 
       Result := True;
    except
@@ -573,6 +634,149 @@ begin
    edtNome.Text            := vObjCliente.Nome;
    chkAtivo.Checked        := vObjCliente.Ativo;
    edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;  
+end;
+
+function TfrmClientes.ProcessaAlteracao: Boolean;
+begin
+   try
+      Result := False;
+
+      if ProcessaCliente then
+      begin
+        TMessageUtil.Informacao('Dados alterados com sucesso.');
+
+        vEstadoTela := etPadrao;
+        DefineEstadoTela;
+        Result := True
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao alterar os dados do cliente [View]: '#13+
+            e.Message)
+      end;
+   end;
+end;
+
+procedure TfrmClientes.edtCodigoExit(Sender: TObject);
+begin
+   if vKey = VK_RETURN then
+      ProcessaConsulta;
+
+   vKey := VK_CLEAR;
+end;
+
+function TfrmClientes.ProcessaExclusao: Boolean;
+begin
+   try
+      Result := False;
+
+      if (vObjCliente = nil) then
+      begin
+         TMessageUtil.Alerta(
+            'Não foi possível carregar todos os dados cadastrados do cliente.');
+
+         LimpaTela;
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+         Exit;
+      end;
+
+      try
+         if TMessageUtil.Pergunta('Confirma a exclusão do cliente?') then
+         begin
+            Screen.Cursor := crHourGlass;
+
+            TPessoaController.getInstancia.ExcluiPessoa(vObjCliente);
+         end
+         else
+         begin
+            LimpaTela;
+            vEstadoTela := etPadrao;
+            DefineEstadoTela;
+            Exit;
+         end;
+      finally
+         Screen.Cursor := crDefault;
+         Application.ProcessMessages;
+      end;
+
+      Result := True;
+
+      TMessageUtil.Informacao('Cliente excluido com sucesso.');
+
+       LimpaTela;
+       vEstadoTela := etPadrao;
+       DefineEstadoTela;
+       Exit;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao excluir os dados do cliente [View]: '#13+
+            e.Message);
+      end;
+
+   end;
+end;
+
+function TfrmClientes.ValidaEndereco: Boolean;
+begin
+   Result := False;
+   if(Trim(edtEndereco.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta('Endereço do cliente não pode ficar em branco.');
+
+       if (edtEndereco.CanFocus) then
+          edtEndereco.SetFocus;
+   end;
+
+   if (Trim(edtNumero.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Número de endereço do cliente não pode ficar em branco.');
+
+      if (edtNumero.CanFocus) then
+         edtNumero.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(edtBairro.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Bairro não pode ficar em branco.');
+
+      if (edtBairro.CanFocus) then
+         edtBairro.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(cmbUF.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'UF não pode ficar em branco.');
+
+      if (cmbUF.CanFocus) then
+         cmbUF.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(edtCidade.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Cidade não pode ficar em branco.');
+
+      if (edtCidade.CanFocus) then
+         edtCidade.SetFocus;
+
+      Exit;
+   end;
+
+   Result := True;
 end;
 
 end.

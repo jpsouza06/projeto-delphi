@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
-  UCliente, UPessoaController;
+  UCliente, UPessoaController, UEndereco;
 
 type
   TfrmClientes = class(TForm)
@@ -58,6 +58,7 @@ type
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure edtCodigoExit(Sender: TObject);
 
    private
     { Private declarations }
@@ -76,6 +77,8 @@ type
 
      function ProcessaConfirmacao : Boolean;
      function ProcessaInclusao    : Boolean;
+     function ProcessaAlteracao   : Boolean;
+     function ProcessaExclusao    : Boolean;
      function ProcessaConsulta    : Boolean;
      function ProcessaCliente     : Boolean;
 
@@ -83,7 +86,8 @@ type
      function ProcessaPessoa      : Boolean;
      function ProcessaEndereco    : Boolean;
 
-     function ValidaCliente       : Boolean;
+     function ValidaCliente  : Boolean;
+     function ValidaEndereco : Boolean;
   public
     { Public declarations }
   end;
@@ -244,6 +248,47 @@ begin
             edtNome.SetFocus;
        end;
 
+       etAlterar:
+       begin
+          stbBarraStatus.Panels[0].Text := 'Alteração';
+
+          if (edtCodigo.Text <> EmptyStr) then
+          begin
+             CamposEnabled(True);
+
+             edtCodigo.Enabled    := False;
+             btnAlterar.Enabled   := False;
+             btnConfirmar.Enabled := True;
+
+             if (chkAtivo.CanFocus) then
+                chkAtivo.SetFocus;
+          end
+          else
+          begin
+             lblCodigo.Enabled := True;
+             edtCodigo.Enabled := True;
+
+             if (edtCodigo.CanFocus) then
+                edtCodigo.SetFocus;
+          end;
+       end;
+
+       etExcluir:
+       begin
+          stbBarraStatus.Panels[0].Text := 'Exclusão';
+
+          if (edtCodigo.Text <> EmptyStr) then
+             ProcessaExclusao
+          else
+          begin
+             lblCodigo.Enabled := True;
+             edtCodigo.Enabled := True;
+
+             if (edtCodigo.CanFocus) then
+                edtCodigo.SetFocus;
+          end;
+       end;
+
        etConsultar:
        begin
           stbBarraStatus.Panels[0].Text := 'Consulta';
@@ -357,6 +402,7 @@ begin
    try
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
+         etAlterar: Result := ProcessaAlteracao;
          etConsultar: Result := ProcessaConsulta;
 
       end;
@@ -458,9 +504,16 @@ begin
 end;
 
 function TfrmClientes.ProcessaEndereco: Boolean;
+var
+   xEndereco : TEndereco;
 begin
    try
       Result := False;
+
+      xEndereco := nil;
+
+      if (not ValidaEndereco) then
+         Exit;
 
       Result := True;
    except
@@ -546,6 +599,149 @@ begin
    edtNome.Text            := vObjCliente.Nome;
    chkAtivo.Checked        := vObjCliente.Ativo;
    edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;  
+end;
+
+function TfrmClientes.ProcessaAlteracao: Boolean;
+begin
+   try
+      Result := False;
+
+      if ProcessaCliente then
+      begin
+        TMessageUtil.Informacao('Dados alterados com sucesso.');
+
+        vEstadoTela := etPadrao;
+        DefineEstadoTela;
+        Result := True
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao alterar os dados do cliente [View]: '#13+
+            e.Message)
+      end;
+   end;
+end;
+
+procedure TfrmClientes.edtCodigoExit(Sender: TObject);
+begin
+   if vKey = VK_RETURN then
+      ProcessaConsulta;
+
+   vKey := VK_CLEAR;
+end;
+
+function TfrmClientes.ProcessaExclusao: Boolean;
+begin
+   try
+      Result := False;
+
+      if (vObjCliente = nil) then
+      begin
+         TMessageUtil.Alerta(
+            'Não foi possível carregar todos os dados cadastrados do cliente.');
+
+         LimpaTela;
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+         Exit;
+      end;
+
+      try
+         if TMessageUtil.Pergunta('Confirma a exclusão do cliente?') then
+         begin
+            Screen.Cursor := crHourGlass;
+
+            TPessoaController.getInstancia.ExcluiPessoa(vObjCliente);
+         end
+         else
+         begin
+            LimpaTela;
+            vEstadoTela := etPadrao;
+            DefineEstadoTela;
+            Exit;
+         end;
+      finally
+         Screen.Cursor := crDefault;
+         Application.ProcessMessages;
+      end;
+
+      Result := True;
+
+      TMessageUtil.Informacao('Cliente excluido com sucesso.');
+
+       LimpaTela;
+       vEstadoTela := etPadrao;
+       DefineEstadoTela;
+       Exit;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao excluir os dados do cliente [View]: '#13+
+            e.Message);
+      end;
+
+   end;
+end;
+
+function TfrmClientes.ValidaEndereco: Boolean;
+begin
+   Result := False;
+   if(Trim(edtEndereco.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta('Endereço do cliente não pode ficar em branco.');
+
+       if (edtEndereco.CanFocus) then
+          edtEndereco.SetFocus;
+   end;
+
+   if (Trim(edtNumero.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Número de endereço do cliente não pode ficar em branco.');
+
+      if (edtNumero.CanFocus) then
+         edtNumero.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(edtBairro.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Bairro não pode ficar em branco.');
+
+      if (edtBairro.CanFocus) then
+         edtBairro.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(cmbUF.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'UF não pode ficar em branco.');
+
+      if (cmbUF.CanFocus) then
+         cmbUF.SetFocus;
+
+      Exit;
+   end;
+
+    if (Trim(edtCidade.Text) = EmptyStr) then
+   begin
+      TMessageUtil.Alerta(
+         'Cidade não pode ficar em branco.');
+
+      if (edtCidade.CanFocus) then
+         edtCidade.SetFocus;
+
+      Exit;
+   end;
+
+   Result := True;
 end;
 
 end.
