@@ -15,8 +15,11 @@ type
           function ExcluiPessoa(pPessoa : TPessoa) : Boolean;
 
           function BuscaPessoa(pID : Integer) : TPessoa;
+          function BuscaEnderecoPessoa(pID_Pessoa : Integer) : TColEndereco;
 
-          function RetornaCondicaoPessoa(pID_Pessoa : Integer) : String;
+          function RetornaCondicaoPessoa(
+             pID_Pessoa : Integer;
+             pRelacionada : Boolean = False) : String;
        published
           class function getInstancia : TPessoaController;
    end;
@@ -29,6 +32,34 @@ var
    _instance: TPessoaController;
 
 { TPessoaController }
+
+function TPessoaController.BuscaEnderecoPessoa(
+  pID_Pessoa: Integer): TColEndereco;
+var
+   xEnderecoDAO : TEnderecoDAO;
+begin
+   try
+      try
+         Result := nil;
+
+         xEnderecoDAO :=
+            TEnderecoDAO.Create(TConexao.getInstance.getConn);
+
+            Result :=
+               xEnderecoDAO.RetornaLista(RetornaCondicaoPessoa(pID_Pessoa, True));
+      finally
+         if(xEnderecoDAO <> nil) then
+            FreeAndNil(xEnderecoDAO);
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao retornar dados de endereço da pessoa [Controller]: '#13+
+         e.Message)
+      end;
+   end;
+end;
 
 function TPessoaController.BuscaPessoa(pID: Integer): TPessoa;
 var
@@ -63,6 +94,7 @@ end;
 function TPessoaController.ExcluiPessoa(pPessoa: TPessoa): Boolean;
 var
    xPessoaDAO : TPessoaDAO;
+   xEnderecoDAO : TEnderecoDAO;
 begin
    try
       try
@@ -72,11 +104,14 @@ begin
 
          xPessoaDAO := TPessoaDAO.Create(TConexao.get.getConn);
 
+         xEnderecoDAO := TEnderecoDAO.Create(TConexao.get.getConn);
+
          if (pPessoa.Id = 0) then
             Exit
          else
          begin
             xPessoaDAO.Deleta(RetornaCondicaoPessoa(pPessoa.Id));
+            xEnderecoDAO.Deleta(RetornaCondicaoPessoa(pPessoa.Id, True));
          end;
 
          TConexao.get.confirmaTransacao;
@@ -85,6 +120,9 @@ begin
       finally
          if xPessoaDAO <> nil then
             FreeAndNil(xPessoaDAO);
+
+         if xEnderecoDAO <> nil then
+            FreeAndNil(xEnderecoDAO);
       end;
    except
       on E: Exception do
@@ -136,6 +174,9 @@ var
          else
          begin
             xPessoaDAO.Atualiza(pPessoa, RetornaCondicaoPessoa(pPessoa.Id));
+
+            xEnderecoDAO.Deleta(RetornaCondicaoPessoa(pPessoa.Id, True));
+            xEnderecoDAO.InsereLista(pColEndereco);
          end;
 
          TConexao.get.confirmaTransacao;
@@ -160,11 +201,15 @@ var
 end;
 
 function TPessoaController.RetornaCondicaoPessoa(
-  pID_Pessoa: Integer): String;
+  pID_Pessoa: Integer;
+  pRelacionada : Boolean): String;
 var
    xChave : String;
 begin
-   xChave := 'ID';
+   if (pRelacionada) then
+      xChave := 'ID_PESSOA'
+   else
+      xChave := 'ID';
 
    Result :=
    'WHERE '#13+

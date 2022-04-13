@@ -59,6 +59,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure edtCodigoExit(Sender: TObject);
+    procedure rdgTipoPessoaClick(Sender: TObject);
 
    private
     { Private declarations }
@@ -413,6 +414,7 @@ begin
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
          etAlterar: Result := ProcessaAlteracao;
+         etExcluir: Result := ProcessaExclusao;
          etConsultar: Result := ProcessaConsulta;
 
       end;
@@ -596,6 +598,10 @@ begin
          TCliente( TPessoaController.getInstancia.BuscaPessoa(
             StrToIntDef(edtCodigo.Text, 0)));
 
+      vObjColEndereco :=
+         TPessoaController.getInstancia.BuscaEnderecoPessoa(
+            StrToIntDef(edtCodigo.Text, 0));
+
       if (vObjCliente <> nil) then
          CarregaDadosTela
       else
@@ -625,6 +631,8 @@ begin
 end;
 
 procedure TfrmClientes.CarregaDadosTela;
+var
+   i : Integer;
 begin
    if (vObjCliente = nil) then
       Exit;
@@ -633,7 +641,21 @@ begin
    rdgTipoPessoa.ItemIndex := vObjCliente.Fisica_Juridica;
    edtNome.Text            := vObjCliente.Nome;
    chkAtivo.Checked        := vObjCliente.Ativo;
-   edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;  
+   edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;
+
+   if (vObjColEndereco <> nil) then
+   begin
+      for i := 0 to pred(vObjColEndereco.Count) do
+      begin
+         edtEndereco.Text    := vObjColEndereco.Retorna(i).Endereco;
+         edtNumero.Text      := vObjColEndereco.Retorna(i).Numero;
+         edtComplemento.Text := vObjColEndereco.Retorna(i).Complemento;
+         edtBairro.Text      := vObjColEndereco.Retorna(i).Bairro;
+         cmbUF.Text          := vObjColEndereco.Retorna(i).UF;
+         edtCidade.Text      := vObjColEndereco.Retorna(i).Cidade;
+      end;
+   end;
+
 end;
 
 function TfrmClientes.ProcessaAlteracao: Boolean;
@@ -672,7 +694,8 @@ begin
    try
       Result := False;
 
-      if (vObjCliente = nil) then
+      if (vObjCliente = nil) or
+         (vObjCliente = nil) then
       begin
          TMessageUtil.Alerta(
             'Não foi possível carregar todos os dados cadastrados do cliente.');
@@ -777,6 +800,20 @@ begin
    end;
 
    Result := True;
+end;
+
+procedure TfrmClientes.rdgTipoPessoaClick(Sender: TObject);
+begin
+   if rdgTipoPessoa.ItemIndex = 1 then
+   begin
+      edtCPFCNPJ.Clear;
+      edtCPFCNPJ.EditMask := '00\.000\.000\/0000\-00;1;_'
+   end
+   else
+   begin
+      edtCPFCNPJ.Clear;
+      edtCPFCNPJ.EditMask := '000\.000\.000\-00;1;_';
+   end;
 end;
 
 end.

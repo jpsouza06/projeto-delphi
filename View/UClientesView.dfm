@@ -431,6 +431,7 @@ object frmClientes: TfrmClientes
         'F'#237'sica'
         'Jur'#237'dica')
       TabOrder = 2
+      OnClick = rdgTipoPessoaClick
     end
     object edtCPFCNPJ: TMaskEdit
       Left = 448
@@ -533,6 +534,7 @@ object frmClientes: TfrmClientes
         Top = 22
         Width = 455
         Height = 21
+        MaxLength = 100
         TabOrder = 0
       end
       object edtNumero: TEdit

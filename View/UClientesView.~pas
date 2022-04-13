@@ -59,14 +59,16 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure edtCodigoExit(Sender: TObject);
+    procedure rdgTipoPessoaClick(Sender: TObject);
 
    private
     { Private declarations }
      vKey : Word;
 
      // Variáveis de Classes
-     vEstadoTela : TEstadoTela;
-     vObjCliente : TCliente;
+     vEstadoTela     : TEstadoTela;
+     vObjCliente     : TCliente;
+     vObjColEndereco : TColEndereco;
 
      procedure CamposEnabled(pOpcao : Boolean);
      procedure LimpaTela;
@@ -176,31 +178,40 @@ procedure TfrmClientes.LimpaTela;
 var
    i : Integer;
 begin
-   for i := 0 to pred(ComponentCount) do
-   begin
-      // Se o campo for do tipo EDIT
-      if (Components[i] is TEdit) then
-         (Components[i] as TEdit).Text := EmptyStr;
-
-         // Se o campo for do tipo MASKEDIT
-      if (Components[i] is TMaskEdit) then   // Limpa o valor que esta no campo
-         (Components[i] as TMaskEdit).Text := EmptyStr;
-
-         // Se o campo for do tipo RADIOGROUP
-      if (Components[i] is TRadioGroup) then   // Então, define seu padrão 0
-         (Components[i] as TRadioGroup).ItemIndex := 0;
-
-         // Se o campo for do tipo COMBOBOX
-      if (Components[i] is TComboBox) then    // Então, define seu padrão -1
+   try
+      for i := 0 to pred(ComponentCount) do
       begin
-        (Components[i] as TComboBox).Clear;
-        (Components[i] as TComboBox).ItemIndex := -1;
-      end;
+         // Se o campo for do tipo EDIT
+         if (Components[i] is TEdit) then
+            (Components[i] as TEdit).Text := EmptyStr;
 
-         // Se o campo for do tipo CHECKBOX
-      if (Components[i] is TCheckBox) then   // Então, define seu padrão desmarcado
-         (Components[i] as TCheckBox).Checked := False;
+            // Se o campo for do tipo MASKEDIT
+         if (Components[i] is TMaskEdit) then   // Limpa o valor que esta no campo
+            (Components[i] as TMaskEdit).Text := EmptyStr;
+
+            // Se o campo for do tipo RADIOGROUP
+         if (Components[i] is TRadioGroup) then   // Então, define seu padrão 0
+            (Components[i] as TRadioGroup).ItemIndex := 0;
+
+            // Se o campo for do tipo COMBOBOX
+         if (Components[i] is TComboBox) then    // Então, define seu padrão -1
+         begin
+           (Components[i] as TComboBox).Clear;
+           (Components[i] as TComboBox).ItemIndex := -1;
+         end;
+
+            // Se o campo for do tipo CHECKBOX
+         if (Components[i] is TCheckBox) then   // Então, define seu padrão desmarcado
+            (Components[i] as TCheckBox).Checked := False;
+      end;
+   finally
+     if (vObjCliente <> nil) then
+     FreeAndNil(vObjCliente);
+
+     if (vObjColEndereco <> nil) then
+     FreeAndNil(vObjColEndereco);
    end;
+
 end;
 
 procedure TfrmClientes.DefineEstadoTela;
@@ -403,6 +414,7 @@ begin
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
          etAlterar: Result := ProcessaAlteracao;
+         etExcluir: Result := ProcessaExclusao;
          etConsultar: Result := ProcessaConsulta;
 
       end;
@@ -450,7 +462,8 @@ begin
          (ProcessaEndereco) then
       begin
          // Gravação no BD
-         TPessoaController.getInstancia.GravaPessoa(vObjCliente);
+         TPessoaController.getInstancia.GravaPessoa(
+            vObjCliente, vObjColEndereco);
 
          Result := True;
       end;
@@ -506,14 +519,38 @@ end;
 function TfrmClientes.ProcessaEndereco: Boolean;
 var
    xEndereco : TEndereco;
+   xID_Pessoa : Integer;
 begin
    try
       Result := False;
 
       xEndereco := nil;
+      xID_Pessoa := 0;
 
       if (not ValidaEndereco) then
          Exit;
+
+      if (vObjColEndereco <> nil) then
+         FreeAndNil(vObjColEndereco);
+
+      vObjColEndereco := TColEndereco.Create;
+
+      if vEstadoTela = etAlterar then
+         xID_Pessoa := StrToIntDef(edtCodigo.Text, 0);
+
+
+
+      xEndereco               := TEndereco.Create;
+      xEndereco.ID_Pessoa     := xID_Pessoa;
+      xEndereco.Tipo_Endereco := 0;
+      xEndereco.Endereco      := edtEndereco.Text;
+      xEndereco.Numero        := edtNumero.Text;
+      xEndereco.Complemento   := edtComplemento.Text;
+      xEndereco.Bairro        := edtBairro.Text;
+      xEndereco.UF            := cmbUF.Text;
+      xEndereco.Cidade        := edtCidade.Text;
+
+      vObjColEndereco.Add(xEndereco);
 
       Result := True;
    except
@@ -561,6 +598,10 @@ begin
          TCliente( TPessoaController.getInstancia.BuscaPessoa(
             StrToIntDef(edtCodigo.Text, 0)));
 
+      vObjColEndereco :=
+         TPessoaController.getInstancia.BuscaEnderecoPessoa(
+            StrToIntDef(edtCodigo.Text, 0));
+
       if (vObjCliente <> nil) then
          CarregaDadosTela
       else
@@ -590,6 +631,8 @@ begin
 end;
 
 procedure TfrmClientes.CarregaDadosTela;
+var
+   i : Integer;
 begin
    if (vObjCliente = nil) then
       Exit;
@@ -598,7 +641,21 @@ begin
    rdgTipoPessoa.ItemIndex := vObjCliente.Fisica_Juridica;
    edtNome.Text            := vObjCliente.Nome;
    chkAtivo.Checked        := vObjCliente.Ativo;
-   edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;  
+   edtCPFCNPJ.Text         := vObjCliente.IdentificadorPessoa;
+
+   if (vObjColEndereco <> nil) then
+   begin
+      for i := 0 to pred(vObjColEndereco.Count) do
+      begin
+         edtEndereco.Text    := vObjColEndereco.Retorna(i).Endereco;
+         edtNumero.Text      := vObjColEndereco.Retorna(i).Numero;
+         edtComplemento.Text := vObjColEndereco.Retorna(i).Complemento;
+         edtBairro.Text      := vObjColEndereco.Retorna(i).Bairro;
+         cmbUF.Text          := vObjColEndereco.Retorna(i).UF;
+         edtCidade.Text      := vObjColEndereco.Retorna(i).Cidade;
+      end;
+   end;
+
 end;
 
 function TfrmClientes.ProcessaAlteracao: Boolean;
@@ -637,7 +694,8 @@ begin
    try
       Result := False;
 
-      if (vObjCliente = nil) then
+      if (vObjCliente = nil) or
+         (vObjCliente = nil) then
       begin
          TMessageUtil.Alerta(
             'Não foi possível carregar todos os dados cadastrados do cliente.');
@@ -742,6 +800,15 @@ begin
    end;
 
    Result := True;
+end;
+
+procedure TfrmClientes.rdgTipoPessoaClick(Sender: TObject);
+begin
+   if rdgTipoPessoa.ItemIndex = 1 then
+      edtCPFCNPJ.EditMask := '00\.000\.000\/0000\-00;1;_'
+
+   else
+      edtCPFCNPJ.EditMask := '000\.000\.000\-00;1;_';
 end;
 
 end.

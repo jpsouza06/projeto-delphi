@@ -14,7 +14,9 @@ uses
   UPessoaDAO in 'Model\UPessoaDAO.pas',
   UGenericDAO in 'Model\BD\UGenericDAO.pas',
   UCliente in 'Model\UCliente.pas',
-  UPessoaController in 'Controller\UPessoaController.pas';
+  UPessoaController in 'Controller\UPessoaController.pas',
+  UEndereco in 'Model\UEndereco.pas',
+  UEnderecoDAO in 'Model\UEnderecoDAO.pas';
 
 {$R *.res}
 
