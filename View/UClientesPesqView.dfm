@@ -10,9 +10,12 @@ object frmClientesPesq: TfrmClientesPesq
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsMDIForm
   KeyPreview = True
   OldCreateOrder = False
+  Position = poScreenCenter
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object stbBarraStatus: TStatusBar
@@ -35,8 +38,8 @@ object frmClientesPesq: TfrmClientesPesq
       Width = 75
       Height = 25
       Caption = 'C&onfirmar'
-      Enabled = False
       TabOrder = 0
+      OnClick = btnConfirmarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -71,8 +74,8 @@ object frmClientesPesq: TfrmClientesPesq
       Width = 75
       Height = 25
       Caption = '&Limpar'
-      Enabled = False
       TabOrder = 1
+      OnClick = btnLimparClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -107,8 +110,8 @@ object frmClientesPesq: TfrmClientesPesq
       Width = 75
       Height = 25
       Caption = '&Sair'
-      Enabled = False
       TabOrder = 2
+      OnClick = btnSairClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -167,21 +170,14 @@ object frmClientesPesq: TfrmClientesPesq
         Height = 13
         Caption = 'Digite parte ou todo conte'#250'do a ser pesquisado'
       end
-      object edtNome: TEdit
-        Left = 51
-        Top = 24
-        Width = 430
-        Height = 21
-        TabOrder = 0
-      end
       object btnFiltrar: TBitBtn
         Left = 496
         Top = 21
         Width = 75
         Height = 25
         Caption = '&Filtrar'
-        Enabled = False
         TabOrder = 1
+        OnClick = btnFiltrarClick
         Glyph.Data = {
           36030000424D3603000000000000360000002800000010000000100000000100
           18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -210,6 +206,14 @@ object frmClientesPesq: TfrmClientesPesq
           29E0AA43E2AF52E4AF54F9ECD3F4DAACEFCB88F0CA7DEFC56DEFC56CF0C56BF4
           CC7AF4CD7BF0C56DEFC56CEFC66DF0CA7EF2CD8AF4DBADF9ECD3}
       end
+      object edtNome: TEdit
+        Left = 49
+        Top = 25
+        Width = 440
+        Height = 21
+        CharCase = ecUpperCase
+        TabOrder = 0
+      end
     end
   end
   object pnlResultado: TPanel
@@ -234,12 +238,15 @@ object frmClientesPesq: TfrmClientesPesq
         Height = 128
         Align = alClient
         DataSource = dtsCliente
+        Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgCancelOnExit]
         TabOrder = 0
         TitleFont.Charset = DEFAULT_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -11
         TitleFont.Name = 'MS Sans Serif'
         TitleFont.Style = []
+        OnDblClick = dbgClienteDblClick
+        OnKeyDown = dbgClienteKeyDown
         Columns = <
           item
             Expanded = False
@@ -270,6 +277,7 @@ object frmClientesPesq: TfrmClientesPesq
     Active = True
     Aggregates = <>
     Params = <>
+    BeforeDelete = cdsClienteBeforeDelete
     Left = 49
     Top = 96
     Data = {

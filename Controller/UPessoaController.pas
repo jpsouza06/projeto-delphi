@@ -15,6 +15,7 @@ type
           function ExcluiPessoa(pPessoa : TPessoa) : Boolean;
 
           function BuscaPessoa(pID : Integer) : TPessoa;
+          function PesquisaPessoa(pNome : String) : TColPessoa;
           function BuscaEnderecoPessoa(pID_Pessoa : Integer) : TColEndereco;
 
           function RetornaCondicaoPessoa(
@@ -194,6 +195,39 @@ var
          TConexao.get.CancelaTransacao;
          Raise Exception.Create(
             'Falha ao gravar os dados da pessoa [Controller]. '#13+
+            e.Message);
+      end;
+
+   end;
+end;
+
+function TPessoaController.PesquisaPessoa(pNome: String): TColPessoa;
+var
+   xPessoaDAO : TPessoaDAO;
+   xCondicao : String;
+begin
+   try
+      try
+         Result := nil;
+
+         xPessoaDAO := TPessoaDAO.Create(TConexao.get.getConn);
+
+         xCondicao :=
+            IfThen(pNome <> EmptyStr,
+               'WHERE                                    '#13+
+               '    (NOME LIKE UPPER(''%'+ pNOME + '%''))'#13+
+               'ORDER BY NOME, ID', EmptyStr);
+
+         Result := xPessoaDAO.RetornaLista(xCondicao);
+      finally
+         if (xPessoaDAO <> nil) then
+            FreeAndNil(xPessoaDAO);
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao buscar os dados da pessoa [Controller]: '#13+
             e.Message);
       end;
 
