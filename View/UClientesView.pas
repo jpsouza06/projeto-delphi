@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
-  UCliente, UPessoaController, UEndereco, frxClass;
+  UCliente, UPessoaController, UEndereco, frxClass, DB, DBClient, frxDBSet,
+  frxExportXLS, frxExportPDF;
 
 type
   TfrmClientes = class(TForm)
@@ -43,6 +44,19 @@ type
     btnCancelar: TBitBtn;
     btnSair: TBitBtn;
     frxListagemCliente: TfrxReport;
+    cdsCliente: TClientDataSet;
+    cdsClienteID: TStringField;
+    cdsClienteNome: TStringField;
+    cdsClienteCPFCNPJ: TStringField;
+    cdsClienteAtivo: TStringField;
+    cdsClienteEndereco: TStringField;
+    cdsClienteNumero: TStringField;
+    cdsClienteComplemento: TStringField;
+    cdsClienteBairro: TStringField;
+    cdsClienteCidadeUF: TStringField;
+    frxDBCliente: TfrxDBDataset;
+    frxPDF: TfrxPDFExport;
+    frxXLS: TfrxXLSExport;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -102,7 +116,7 @@ var
 implementation
 
 uses
-   uMessageUtil, UClientesPesqView;
+   uMessageUtil, UClientesPesqView, StrUtils;
 
 {$R *.dfm}
 
@@ -334,7 +348,7 @@ begin
           stbBarraStatus.Panels[0].Text := 'Listar';
 
           if (edtCodigo.Text <> EmptyStr) then
-             ProcessaListagem;
+             ProcessaListagem
           else
           begin
              lblCodigo.Enabled := True;
@@ -809,6 +823,7 @@ begin
       if (edtNumero.CanFocus) then
          edtNumero.SetFocus;
 
+
       Exit;
    end;
 
@@ -865,10 +880,35 @@ end;
 function TfrmClientes.ProcessaListagem: Boolean;
 begin
    try
+      if (not cdsCliente.Active) then
+         Exit;
+
+      cdsCliente.Append;
+      cdsClienteID.Value          := edtCodigo.Text;
+      cdsClienteNome.Value        := edtNome.Text;
+      cdsClienteCPFCNPJ.Value     := edtCPFCNPJ.Text;
+      cdsClienteAtivo.Value       := IfThen(chkAtivo.Checked, 'Sim', 'Não');
+      cdsClienteEndereco.Value    := edtEndereco.Text;
+      cdsClienteNumero.Value      := edtNumero.Text;
+      cdsClienteComplemento.Value := edtComplemento.Text;
+      cdsClienteBairro.Value      := edtBairro.Text;
+      cdsClienteCidadeUF.Value    := edtCidade.Text + '/' + cmbUF.Text;
+
+      cdsCliente.Post;
+
+      frxListagemCliente.Variables['DATAHORA']    :=
+         QuotedStr(FormatDateTime('DD/MM/YYYY hh:mm', Date + Time));
+      frxListagemCliente.Variables['NOMEEMPRESA'] :=
+         QuotedStr('Nome da empresa');
+
+      frxXLS.Wysiwyg := False;
+
+      frxListagemCliente.ShowReport();
 
    finally
       vEstadoTela := etPadrao;
       DefineEstadoTela;
+      cdsCliente.EmptyDataSet;
    end;
 end;
 
