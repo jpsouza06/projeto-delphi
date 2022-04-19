@@ -66,7 +66,7 @@ var
 implementation
 
 
-uses Math, StrUtils;
+uses Math, StrUtils, ComObj;
 
 {$R *.dfm}
 
@@ -258,7 +258,7 @@ var
    xIndiceCab : Integer;
    xCaminho   : string;
 begin
-   xIndiceCab := 0;
+   xIndiceCab := 2;
    xCaminho   := 'ListagemCliente_'+ DateTimeToStr(Now) + '.xls';
 
    xCaminho   := TFuncoes.Troca(xCaminho, '/', '');
@@ -276,12 +276,12 @@ begin
       xExcel.WorkBooks.Add(Null);
 
       xExcel.ActiveSheet.Rows[2].Select;
-      xExcel.ActiveSheet.FreezePenes := True;
+      xExcel.ActiveSheet.FreezePanes := True;
 
       //Cabeçalho
-      xExcel.Range['A1', 'A1'].ColumnWidth := 5.00;
-      xExcel.Range['B1', 'B1'].ColumnWidth := 20.00;
-      xExcel.Range['C1', 'C1'].ColumnWidth := 5.00
+      xExcel.Range['A1', 'A1'].ColumnWidth := 10.00;
+      xExcel.Range['B1', 'B1'].ColumnWidth := 100.00;
+      xExcel.Range['C1', 'C1'].ColumnWidth := 10.00;
 
       xExcel.Range['D1', 'E1'].MargeCells := True;
 
@@ -296,8 +296,34 @@ begin
       xExcel.Range['B1', 'B1'].Value := 'Nome';
       xExcel.Range['C1', 'C1'].Value := 'Ativo';
 
-   finally
+      cdsCliente.First;
+      while not cdsCliente.Eof do
+      begin
+         Inc(xIndiceCab);
+//         xExcel.Range['A' + IntoStr(xIndiceCab)].NumberFormat := 'dd/mm/aaaa';
+//         xExcel.Range['A' + IntoStr(xIndiceCab)].NumberFormat := '#,###0.00';
 
+         xExcel.Range['A' + IntoStr(xIndiceCab), 'A' + IntToStr(xIndiceCab)]
+            .Value := cdsClienteID.AsString;
+
+         xExcel.Range['B' + IntoStr(xIndiceCab), 'B' + IntToStr(xIndiceCab)]
+            .Value := cdsClienteNome.Value;
+
+         xExcel.Range['C' + IntoStr(xIndiceCab), 'C' + IntToStr(xIndiceCab)]
+            .Value := cdsClienteDescricaoAtivo.Value;
+
+         cdsCliente.Next;
+      end;
+
+      if FileExists(xCaminho) then
+         DeleteFile(xCaminho);
+
+      xExcel.WorkBooks[1].Worksheets[1].Activate;
+      xExcel.ActiveWorkBook.SaveAs(xCaminho);
+
+      xExcel.Application.Visible := True;
+   finally
+      xExcel := Unassigned;
    end;
 end;
 

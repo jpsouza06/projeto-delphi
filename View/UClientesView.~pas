@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, UEnumerationUtil,
-  UCliente, UPessoaController, UEndereco, frxClass, DB, DBClient, frxDBSet;
+  UCliente, UPessoaController, UEndereco, frxClass, DB, DBClient, frxDBSet,
+  frxExportXLS, frxExportPDF;
 
 type
   TfrmClientes = class(TForm)
@@ -54,6 +55,8 @@ type
     cdsClienteBairro: TStringField;
     cdsClienteCidadeUF: TStringField;
     frxDBCliente: TfrxDBDataset;
+    frxPDF: TfrxPDFExport;
+    frxXLS: TfrxXLSExport;
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -113,7 +116,7 @@ var
 implementation
 
 uses
-   uMessageUtil, UClientesPesqView;
+   uMessageUtil, UClientesPesqView, StrUtils;
 
 {$R *.dfm}
 
@@ -345,7 +348,7 @@ begin
           stbBarraStatus.Panels[0].Text := 'Listar';
 
           if (edtCodigo.Text <> EmptyStr) then
-             ProcessaListagem;
+             ProcessaListagem
           else
           begin
              lblCodigo.Enabled := True;
@@ -897,11 +900,15 @@ begin
          QuotedStr(FormatDateTime('DD/MM/YYYY hh:mm', Date + Time));
       frxListagemCliente.Variables['NOMEEMPRESA'] :=
          QuotedStr('Nome da empresa');
+
+      frxXLS.Wysiwyg := False;
+
       frxListagemCliente.ShowReport();
 
    finally
       vEstadoTela := etPadrao;
       DefineEstadoTela;
+      cdsCliente.EmptyDataSet;
    end;
 end;
 

@@ -1,6 +1,6 @@
 object frmClientes: TfrmClientes
-  Left = 410
-  Top = 242
+  Left = 572
+  Top = 214
   Width = 596
   Height = 378
   Caption = 'Clientes'
@@ -337,7 +337,6 @@ object frmClientes: TfrmClientes
       Width = 75
       Height = 25
       Caption = '&Sair'
-      Enabled = False
       TabOrder = 8
       OnClick = btnSairClick
       Glyph.Data = {
@@ -848,8 +847,7 @@ object frmClientes: TfrmClientes
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'ENDERE'#195#8225'O PRINCIPAL')
           ParentFont = False
@@ -864,8 +862,7 @@ object frmClientes: TfrmClientes
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'Endere'#195#167'o')
           ParentFont = False
@@ -880,8 +877,7 @@ object frmClientes: TfrmClientes
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'N'#195#186'mero')
           ParentFont = False
@@ -896,8 +892,7 @@ object frmClientes: TfrmClientes
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'Complemento')
           ParentFont = False
@@ -926,15 +921,14 @@ object frmClientes: TfrmClientes
         object Memo8: TfrxMemoView
           Left = 3.779530000000000000
           Top = 34.015770000000000000
-          Width = 45.354360000000000000
+          Width = 49.133890000000000000
           Height = 18.897650000000000000
           ShowHint = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'Bairro:'
             '')
@@ -943,15 +937,14 @@ object frmClientes: TfrmClientes
         object Memo9: TfrxMemoView
           Left = 386.512060000000000000
           Top = 34.015770000000000000
-          Width = 71.811070000000000000
+          Width = 75.590600000000000000
           Height = 18.897650000000000000
           ShowHint = False
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
           Font.Height = -13
           Font.Name = 'Arial'
-          Font.Style = []
-          Frame.Typ = [ftBottom]
+          Font.Style = [fsBold]
           Memo.UTF8 = (
             'Cidade/UF:')
           ParentFont = False
@@ -1085,5 +1078,40 @@ object frmClientes: TfrmClientes
     BCDToCurrency = False
     Left = 328
     Top = 258
+  end
+  object frxPDF: TfrxPDFExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    PrintOptimized = False
+    Outline = False
+    Background = False
+    HTMLTags = True
+    Author = 'FastReport'
+    Subject = 'FastReport PDF export'
+    ProtectionFlags = [ePrint, eModify, eCopy, eAnnot]
+    HideToolbar = False
+    HideMenubar = False
+    HideWindowUI = False
+    FitWindow = False
+    CenterWindow = False
+    PrintScaling = False
+    Left = 296
+    Top = 290
+  end
+  object frxXLS: TfrxXLSExport
+    UseFileCache = True
+    ShowProgress = True
+    OverwritePrompt = False
+    ExportEMF = True
+    Wysiwyg = False
+    AsText = False
+    Background = True
+    FastExport = True
+    PageBreaks = True
+    EmptyLines = True
+    SuppressPageHeadersFooters = False
+    Left = 328
+    Top = 290
   end
 end

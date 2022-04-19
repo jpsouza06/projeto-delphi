@@ -303,13 +303,13 @@ begin
 //         xExcel.Range['A' + IntoStr(xIndiceCab)].NumberFormat := 'dd/mm/aaaa';
 //         xExcel.Range['A' + IntoStr(xIndiceCab)].NumberFormat := '#,###0.00';
 
-         xExcel.Range['A' + IntoStr(xIndiceCab), 'A' + IntToStr(xIndiceCab)]
+         xExcel.Range['A' + IntToStr(xIndiceCab), 'A' + IntToStr(xIndiceCab)]
             .Value := cdsClienteID.AsString;
 
-         xExcel.Range['B' + IntoStr(xIndiceCab), 'B' + IntToStr(xIndiceCab)]
+         xExcel.Range['B' + IntToStr(xIndiceCab), 'B' + IntToStr(xIndiceCab)]
             .Value := cdsClienteNome.Value;
 
-         xExcel.Range['C' + IntoStr(xIndiceCab), 'C' + IntToStr(xIndiceCab)]
+         xExcel.Range['C' + IntToStr(xIndiceCab), 'C' + IntToStr(xIndiceCab)]
             .Value := cdsClienteDescricaoAtivo.Value;
 
          cdsCliente.Next;
