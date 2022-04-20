@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, StdCtrls, Buttons, UEnumerationUtil,
-  UUnidadeProdutos;
+  UUnidadeProdutos, UUnidadeProdutosController;
 
 type
   TfrmUnidadeProdutos = class(TForm)
@@ -37,6 +37,10 @@ type
     procedure btnSairClick(Sender: TObject);
     procedure btnIncluirClick(Sender: TObject);
     procedure btnConfirmarClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnConsultarClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure edtCodigoExit(Sender: TObject);
   private
     { Private declarations }
      vKey : Word;
@@ -48,10 +52,16 @@ type
      procedure LimpaTela;
      procedure DefineEstadoTela;
 
+     procedure CarregaDadosTela;
+
      function ProcessaConfirmacao     : Boolean;
      function ProcessaInclusao        : Boolean;
+     function ProcessaAlteracao       : Boolean;
+     function ProcessaConsulta        : Boolean;
      function ProcessaUnidadeProdutos : Boolean;
+
      function ProcessaUnidade         : Boolean;
+
      function ValidaUnidade           : Boolean;
 
 
@@ -113,8 +123,71 @@ begin
          if (edtUnidade.CanFocus) then
             edtUnidade.SetFocus
       end;
+
+      etAlterar:
+      begin
+         stbBarraStatus.Panels[0].Text := 'Alteração';
+         CamposEnabled(False);
+
+         if (edtCodigo.Text <> EmptyStr) then
+         begin
+            CamposEnabled(True);
+
+            edtCodigo.Enabled    := False;
+            btnAlterar.Enabled   := False;
+            btnConfirmar.Enabled := True;
+
+            if (chkAtivo.CanFocus) then
+               chkAtivo.SetFocus;
+         end
+         else
+         begin
+            lblCodigo.Enabled := True;
+            edtCodigo.Enabled := True;
+
+            if (edtCodigo.CanFocus) then
+               edtCodigo.SetFocus;
+         end;
+      end;
+
+      etConsultar:
+      begin
+         stbBarraStatus.Panels[0].Text := 'Consulta';
+
+         CamposEnabled(False);
+
+         if (edtCodigo.Text <> EmptyStr) then
+         begin
+            edtCodigo.Enabled := False;
+            btnAlterar.Enabled := True;
+            btnExcluir.Enabled := True;
+            btnConfirmar.Enabled := False;
+
+            if (btnAlterar.CanFocus) then
+               btnAlterar.SetFocus;
+         end
+         else
+         begin
+            lblCodigo.Enabled := True;
+            edtCodigo.Enabled := True;
+
+            if (edtCodigo.CanFocus) then
+               edtCodigo.SetFocus;
+         end;
+      end;
   end;
 end;
+procedure TfrmUnidadeProdutos.CarregaDadosTela;
+begin
+   if (vObjUnidadeProdutos = nil) then
+      Exit;
+
+   edtCodigo.Text    := IntToStr(vObjUnidadeProdutos.Id);
+   edtUnidade.Text   := vObjUnidadeProdutos.Unidade;
+   edtDescricao.Text := vObjUnidadeProdutos.Descricao;
+   chkAtivo.Checked  := vObjUnidadeProdutos.Ativo;
+end;
+
 
 procedure TfrmUnidadeProdutos.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -238,9 +311,9 @@ begin
    try
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
-//         etAlterar: Result := ProcessaAlteracao;
+         etAlterar: Result := ProcessaAlteracao;
 //         etExcluir: Result := ProcessaExclusao;
-//         etConsultar: Result := ProcessaConsulta;
+         etConsultar: Result := ProcessaConsulta;
 
       end;
 
@@ -287,8 +360,8 @@ begin
       if (ProcessaUnidade) then
       begin
          // Gravação no BD
-//         TUnidadeProdutosController.getInstancia.GravaPessoa(
-//            vObjUnidadeProdutos);
+         TUnidadeProdutosController.getInstancia.GravaUnidadeProdutos(
+            vObjUnidadeProdutos);
 
          Result := True;
       end;
@@ -333,7 +406,7 @@ begin
       on E: Exception do
       begin
          Raise Exception.Create(
-         'Falha ao processar os dados da Pessoa [View]. '#13+
+         'Falha ao processar os dados da unidade [View]. '#13+
          e.Message);
       end;
    end;
@@ -341,7 +414,131 @@ end;
 
 function TfrmUnidadeProdutos.ValidaUnidade: Boolean;
 begin
+   Result := False;
+   if (edtUnidade.Text = EmptyStr) then
+   begin
+      TMessageUtil.Alerta('Unidade não pode ficar em branco.');
 
+      if (edtUnidade.CanFocus) then
+         edtUnidade.SetFocus;
+
+      Exit;
+   end;
+
+   if (edtDescricao.Text = EmptyStr) then
+   begin
+      TMessageUtil.Alerta('Descrição não pode ficar em branco.');
+
+      if (edtDescricao.CanFocus) then
+         edtDescricao.SetFocus;
+
+      Exit;
+   end;
+
+   Result := True;
+end;
+
+procedure TfrmUnidadeProdutos.btnCancelarClick(Sender: TObject);
+begin
+   vEstadoTela := etPadrao;
+   DefineEstadoTela;
+end;
+
+function TfrmUnidadeProdutos.ProcessaConsulta: Boolean;
+begin
+   try
+      Result := False;
+
+      if (edtCodigo.Text = EmptyStr) then
+      begin
+         TMessageUtil.Alerta('Código da Unidade não pode ficar em branco.');
+
+         if (edtCodigo.CanFocus) then
+            edtCodigo.SetFocus;
+
+         Exit;
+      end;
+
+      vObjUnidadeProdutos :=
+         TUnidadeProdutos(TUnidadeProdutosController.getInstancia.BuscaUnidadeProdutos(
+            StrToIntDef(edtCodigo.Text, 0)));
+
+      if (vObjUnidadeProdutos <> nil) then
+         CarregaDadosTela
+      else
+      begin
+         TMessageUtil.Alerta(
+            'Nenhuma Unidade encontrada para o código informado.');
+
+         LimpaTela;
+
+         if (edtCodigo.CanFocus) then
+            edtCodigo.SetFocus;
+
+         Exit;
+      end;
+
+      DefineEstadoTela;
+
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados da unidade [View]: '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+procedure TfrmUnidadeProdutos.btnConsultarClick(Sender: TObject);
+begin
+   vEstadoTela := etConsultar;
+   DefineEstadoTela;
+end;
+
+function TfrmUnidadeProdutos.ProcessaAlteracao: Boolean;
+begin
+   try
+      Result := False;
+
+      if (edtUnidade.Text = EmptyStr) then
+      begin
+         ProcessaConsulta;
+         Exit;
+      end;
+
+      if ProcessaUnidadeProdutos then
+      begin
+         TMessageUtil.Informacao('Dados alterados com sucesso.');
+
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+
+         Result := True;
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao alterar os dados da unidade [View]: '#13+
+         e.Message)
+      end;
+   end;
+end;
+
+procedure TfrmUnidadeProdutos.btnAlterarClick(Sender: TObject);
+begin
+   vEstadoTela := etAlterar;
+   DefineEstadoTela;
+end;
+
+procedure TfrmUnidadeProdutos.edtCodigoExit(Sender: TObject);
+begin
+   if vKey = VK_RETURN then
+      ProcessaConsulta;
+
+   vKey := VK_CLEAR;
 end;
 
 end.

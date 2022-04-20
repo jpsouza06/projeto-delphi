@@ -81,6 +81,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Width = 54
       Height = 21
       TabOrder = 0
+      OnExit = edtCodigoExit
     end
     object chkAtivo: TCheckBox
       Left = 120
@@ -157,6 +158,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Height = 25
       Caption = '&Alterar'
       TabOrder = 1
+      OnClick = btnAlterarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E000000000000000000000A2B95062082
@@ -226,7 +228,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Width = 75
       Height = 25
       Caption = '&Pesquisar'
-      TabOrder = 3
+      TabOrder = 4
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -261,7 +263,8 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Width = 75
       Height = 25
       Caption = '&Consultar'
-      TabOrder = 4
+      TabOrder = 3
+      OnClick = btnConsultarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -335,6 +338,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Caption = '&Cancelar'
       Enabled = False
       TabOrder = 6
+      OnClick = btnCancelarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFF5B57D9

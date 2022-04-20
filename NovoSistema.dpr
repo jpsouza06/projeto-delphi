@@ -20,7 +20,8 @@ uses
   UClientesPesqView in 'View\UClientesPesqView.pas' {frmClientesPesq},
   UUnidadeProdutosView in 'View\UUnidadeProdutosView.pas' {frmUnidadeProdutos},
   UUnidadeProdutos in 'View\UUnidadeProdutos.pas',
-  UUnidadadeProdutosDAO in 'View\UUnidadadeProdutosDAO.pas';
+  UUnidadadeProdutosDAO in 'View\UUnidadadeProdutosDAO.pas',
+  UUnidadeProdutosController in 'Controller\UUnidadeProdutosController.pas';
 
 {$R *.res}
 

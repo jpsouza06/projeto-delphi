@@ -813,6 +813,8 @@ begin
 
        if (edtEndereco.CanFocus) then
           edtEndereco.SetFocus;
+
+       Exit;
    end;
 
    if (Trim(edtNumero.Text) = EmptyStr) then
