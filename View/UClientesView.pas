@@ -721,6 +721,12 @@ begin
    try
       Result := False;
 
+      if (edtNome.Text = EmptyStr) then
+      begin
+         ProcessaConsulta;
+         Exit;
+      end;
+
       if ProcessaCliente then
       begin
         TMessageUtil.Informacao('Dados alterados com sucesso.');
@@ -753,7 +759,7 @@ begin
       Result := False;
 
       if (vObjCliente = nil) or
-         (vObjCliente = nil) then
+         (vObjColEndereco = nil) then
       begin
          TMessageUtil.Alerta(
             'Não foi possível carregar todos os dados cadastrados do cliente.');

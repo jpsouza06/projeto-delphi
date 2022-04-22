@@ -1,6 +1,6 @@
 object frmClientesPesq: TfrmClientesPesq
-  Left = 429
-  Top = 256
+  Left = 488
+  Top = 286
   Width = 599
   Height = 302
   Caption = 'Pesquisa de cliente'
@@ -331,6 +331,7 @@ object frmClientesPesq: TfrmClientesPesq
   end
   object dtsCliente: TDataSource
     DataSet = cdsCliente
+    OnDataChange = dtsClienteDataChange
     Left = 9
     Top = 97
   end

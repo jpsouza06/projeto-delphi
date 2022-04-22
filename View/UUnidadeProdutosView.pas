@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, StdCtrls, Buttons, UEnumerationUtil,
-  UUnidadeProdutos, UUnidadeProdutosController;
+  UUnidadeProdutos, UUnidadeProdutosController, UUnidadeProdutosPesqView;
 
 type
   TfrmUnidadeProdutos = class(TForm)
@@ -41,6 +41,8 @@ type
     procedure btnConsultarClick(Sender: TObject);
     procedure btnAlterarClick(Sender: TObject);
     procedure edtCodigoExit(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnPesquisarClick(Sender: TObject);
   private
     { Private declarations }
      vKey : Word;
@@ -57,6 +59,7 @@ type
      function ProcessaConfirmacao     : Boolean;
      function ProcessaInclusao        : Boolean;
      function ProcessaAlteracao       : Boolean;
+     function ProcessaExclusao        : Boolean;
      function ProcessaConsulta        : Boolean;
      function ProcessaUnidadeProdutos : Boolean;
 
@@ -150,6 +153,24 @@ begin
          end;
       end;
 
+      etExcluir:
+      begin
+         stbBarraStatus.Panels[0].Text := 'Exclusão';
+
+         CamposEnabled(False);
+
+         if (edtCodigo.Text <> EmptyStr) then
+            ProcessaExclusao
+         else
+         begin
+         lblCodigo.Enabled := True;
+         edtCodigo.Enabled := True;
+
+         if (edtCodigo.CanFocus) then
+            edtCodigo.SetFocus;
+         end;
+      end;
+
       etConsultar:
       begin
          stbBarraStatus.Panels[0].Text := 'Consulta';
@@ -174,6 +195,31 @@ begin
             if (edtCodigo.CanFocus) then
                edtCodigo.SetFocus;
          end;
+      end;
+
+      etPesquisar:
+      begin
+         stbBarraStatus.Panels[0].Text := 'Pesquisa';
+
+         if(frmUnidadeProdutosPesq = nil) then
+            frmUnidadeProdutosPesq := TfrmUnidadeProdutosPesq.Create(Application);
+
+         frmUnidadeProdutosPesq.ShowModal;
+
+         if(frmUnidadeProdutosPesq.mUnidadeID <> 0) then
+         begin
+            edtCodigo.Text := IntToStr(frmUnidadeProdutosPesq.mUnidadeID);
+            vEstadoTela := etConsultar;
+            ProcessaConsulta;
+         end
+         else
+         begin
+            vEstadoTela := etPadrao;
+            DefineEstadoTela;
+         end;
+
+         frmUnidadeProdutosPesq.mUnidadeID := 0;
+         frmUnidadeProdutosPesq.mUnidade   := EmptyStr;
       end;
   end;
 end;
@@ -312,7 +358,7 @@ begin
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
          etAlterar: Result := ProcessaAlteracao;
-//         etExcluir: Result := ProcessaExclusao;
+         etExcluir: Result := ProcessaExclusao;
          etConsultar: Result := ProcessaConsulta;
 
       end;
@@ -451,7 +497,7 @@ begin
 
       if (edtCodigo.Text = EmptyStr) then
       begin
-         TMessageUtil.Alerta('Código da Unidade não pode ficar em branco.');
+         TMessageUtil.Alerta('Código da unidade não pode ficar em branco.');
 
          if (edtCodigo.CanFocus) then
             edtCodigo.SetFocus;
@@ -468,7 +514,7 @@ begin
       else
       begin
          TMessageUtil.Alerta(
-            'Nenhuma Unidade encontrada para o código informado.');
+            'Nenhuma unidade encontrada para o código informado.');
 
          LimpaTela;
 
@@ -539,6 +585,71 @@ begin
       ProcessaConsulta;
 
    vKey := VK_CLEAR;
+end;
+
+function TfrmUnidadeProdutos.ProcessaExclusao: Boolean;
+begin
+   try
+      Result := False;
+
+      if (vObjUnidadeProdutos = nil) then
+      begin
+         TMessageUtil.Alerta(
+            'Não foi possivel carregar todos os dados da unidade.');
+
+         LimpaTela;
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+         Exit;
+      end;
+      try
+         if (TMessageUtil.Pergunta('Confirma exclusão da unidade?')) then
+         begin
+            Screen.Cursor := crHourGlass;
+
+            TUnidadeProdutosController.getInstancia.ExcluiUnidadeProdutos(
+               vObjUnidadeProdutos);
+
+            TMessageUtil.Informacao('Unidade excluida com sucesso.')
+         end
+         else
+         begin
+            LimpaTela;
+            vEstadoTela := etPadrao;
+            DefineEstadoTela;
+            Exit;
+         end;
+      finally
+         Screen.Cursor := crDefault;
+         Application.ProcessMessages;
+      end;
+
+      Result := True;
+
+      LimpaTela;
+      vEstadoTela := etPadrao;
+      DefineEstadoTela;
+      Exit;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao excluir a unidade [View]: '#13+
+         e.Message);
+      end;
+   end;
+end;
+
+procedure TfrmUnidadeProdutos.btnExcluirClick(Sender: TObject);
+begin
+   vEstadoTela := etExcluir;
+   DefineEstadoTela;
+end;
+
+procedure TfrmUnidadeProdutos.btnPesquisarClick(Sender: TObject);
+begin
+   vEstadoTela := etPesquisar;
+   DefineEstadoTela;
 end;
 
 end.

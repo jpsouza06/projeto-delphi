@@ -11,10 +11,11 @@ type
           function GravaUnidadeProdutos(
                       pUnidadeProdutos : TUnidadeProdutos) : Boolean;
 
-//          function ExcluiPessoa(pPessoa : TPessoa) : Boolean;
-//
+          function ExcluiUnidadeProdutos(
+             pUnidadeProdutos : TUnidadeProdutos) : Boolean;
+
           function BuscaUnidadeProdutos(pID : Integer) : TUnidadeProdutos;
-//          function PesquisaPessoa(pNome : String) : TColPessoa;
+          function PesquisaUnidadeProdutos(pUnidade : String) : TColUnidadeProdutos;
 
           function RetornaCondicaoUnidadeProdutos(
              pID_UnidadeProdutos : Integer) : String;
@@ -65,6 +66,45 @@ begin
    inherited Create;
 end;
 
+function TUnidadeProdutosController.ExcluiUnidadeProdutos(
+  pUnidadeProdutos: TUnidadeProdutos): Boolean;
+var
+   xUnidadeProdutosDAO :TUnidadeProdutosDAO;
+begin
+   try
+      try
+         Result := False;
+
+         TConexao.get.iniciaTransacao;
+
+         xUnidadeProdutosDAO :=
+            TUnidadeProdutosDAO.Create(TConexao.get.getConn);
+
+         if (pUnidadeProdutos.Id = 0) then
+            Exit
+         else
+         begin
+            xUnidadeProdutosDAO.Deleta(
+               RetornaCondicaoUnidadeProdutos(pUnidadeProdutos.Id));
+         end;
+
+         TConexao.get.confirmaTransacao;
+
+         Result := True;
+      finally
+         if (xUnidadeProdutosDAO <> nil) then
+            FreeAndNil(xUnidadeProdutosDAO);
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao excluir a unidade [Controller]: '#13+
+         e.Message);
+      end;
+   end;
+end;
+
 class function TUnidadeProdutosController.getInstancia: TUnidadeProdutosController;
 begin
    if _instance = nil then
@@ -96,8 +136,6 @@ begin
             xUnidadeProdutosDAO.Atualiza(
             pUnidadeProdutos,
             RetornaCondicaoUnidadeProdutos(pUnidadeProdutos.Id));
-
-//            xEnderecoDAO.Deleta(RetornaCondicaoPessoa(pPessoa.Id, True));
          end;
 
          TConexao.get.confirmaTransacao;
@@ -113,6 +151,34 @@ begin
          'Falha ao gravar os dados da unidade [Controller]: '#13+
          e.Message);
       end;
+   end;
+end;
+
+function TUnidadeProdutosController.PesquisaUnidadeProdutos(
+  pUnidade: String): TColUnidadeProdutos;
+var
+   xUnidadeProdutosDAO : TUnidadeProdutosDAO;
+   xCondicao           : String;
+begin
+   try
+      try
+         Result := nil;
+
+         xUnidadeProdutosDAO := TUnidadeProdutosDAO.Create(TConexao.get.getConn);
+
+         xCondicao :=
+            IfThen(pUnidade <> EmptyStr,
+            'WHERE                                          '#13+
+            '    (UNIDADE LIKE UPPER(''%'+ pUNIDADE + '%''))'#13+
+            'ORDER BY UNIDADE, ID', EmptyStr);
+
+         Result := xUnidadeProdutosDAO.RetornaLista(xCondicao);
+      finally
+         if (xUnidadeProdutosDAO <> nil) then
+            FreeAndNil(xUnidadeProdutosDAO);
+      end;
+   except
+
    end;
 end;
 

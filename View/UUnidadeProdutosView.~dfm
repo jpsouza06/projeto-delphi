@@ -29,7 +29,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
     Height = 19
     Panels = <
       item
-        Width = 50
+        Width = 80
       end
       item
         Width = 50
@@ -96,6 +96,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Top = 45
       Width = 54
       Height = 21
+      CharCase = ecUpperCase
       MaxLength = 2
       TabOrder = 2
     end
@@ -194,6 +195,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Height = 25
       Caption = '&Excluir'
       TabOrder = 2
+      OnClick = btnExcluirClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -229,6 +231,7 @@ object frmUnidadeProdutos: TfrmUnidadeProdutos
       Height = 25
       Caption = '&Pesquisar'
       TabOrder = 4
+      OnClick = btnPesquisarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF

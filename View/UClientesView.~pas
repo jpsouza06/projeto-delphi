@@ -721,6 +721,12 @@ begin
    try
       Result := False;
 
+      if (edtNome.Text = EmptyStr) then
+      begin
+         ProcessaConsulta;
+         Exit;
+      end;
+
       if ProcessaCliente then
       begin
         TMessageUtil.Informacao('Dados alterados com sucesso.');
@@ -813,6 +819,8 @@ begin
 
        if (edtEndereco.CanFocus) then
           edtEndereco.SetFocus;
+
+       Exit;
    end;
 
    if (Trim(edtNumero.Text) = EmptyStr) then
