@@ -75,7 +75,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure edtCodigoExit(Sender: TObject);
     procedure rdgTipoPessoaClick(Sender: TObject);
-
    private
     { Private declarations }
      vKey : Word;
@@ -106,6 +105,8 @@ type
 
      function ValidaCliente  : Boolean;
      function ValidaEndereco : Boolean;
+     function ValidaCPF      : Boolean;
+     function ValidaCNPJ     : Boolean;
   public
     { Public declarations }
   end;
@@ -116,7 +117,7 @@ var
 implementation
 
 uses
-   uMessageUtil, UClientesPesqView, StrUtils;
+   uMessageUtil, UClientesPesqView, StrUtils, UClassFuncoes;
 
 {$R *.dfm}
 
@@ -128,7 +129,10 @@ begin
       VK_RETURN: //Corresponde a tecla <ENTER>
       begin
          // Comando responsável para passar para o próximo campo do formulário
-         Perform(WM_NextDlgCtl, 0, 0)
+
+
+
+         Perform(WM_NextDlgCtl, 0, 0);
       end;
 
       VK_ESCAPE:  // Correspondente a tecla <ESC>
@@ -634,6 +638,29 @@ begin
       Exit;
    end;
 
+   // Se for CPF
+   if (rdgTipoPessoa.ItemIndex = 0) and
+      (not ValidaCPF) then
+   begin
+      TMessageUtil.Alerta('CPF inválido.');
+
+      if edtCPFCNPJ.CanFocus then
+         edtCPFCNPJ.SetFocus;
+      Exit;
+   end;
+
+   // Se for CNPJ
+   if (rdgTipoPessoa.ItemIndex = 1) and
+      (not ValidaCNPJ) then
+   begin
+      TMessageUtil.Alerta('CNPJ inválido.');
+
+      if edtCPFCNPJ.CanFocus then
+         edtCPFCNPJ.SetFocus;
+      Exit;
+   end;
+
+
    Result := True;
 end;
 
@@ -876,12 +903,12 @@ begin
    if rdgTipoPessoa.ItemIndex = 1 then
    begin
       edtCPFCNPJ.Clear;
-      edtCPFCNPJ.EditMask := '00\.000\.000\/0000\-00;1;_'
+      edtCPFCNPJ.EditMask := '99\.999\.999\/9999\-99;1;_'
    end
    else
    begin
       edtCPFCNPJ.Clear;
-      edtCPFCNPJ.EditMask := '000\.000\.000\-00;1;_';
+      edtCPFCNPJ.EditMask := ' 999\.999\.999\-99;1;_';
    end;
 end;
 
@@ -918,6 +945,140 @@ begin
       DefineEstadoTela;
       cdsCliente.EmptyDataSet;
    end;
+end;
+function TfrmClientes.ValidaCPF: Boolean;
+var
+   i    : Integer;
+   Aux  : Integer;
+   CPF  : String;
+   Soma : Integer;
+   novoCPF  : String;
+   RestoDiv : Integer;
+   Digito  : String;
+
+begin
+   Result := False;
+
+   CPF := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+
+
+
+
+   // Digito 1
+   Aux := 10;
+   Soma := 0;
+
+   for i := 1 to 9 do
+   begin
+      Soma := Soma + (StrToInt(CPF[i]) * Aux);
+      Aux := Aux - 1;
+
+      novoCPF := novoCPF + CPF[i];
+   end;
+
+   RestoDiv := Soma mod 11;
+
+   if ((11 - RestoDiv) > 9) then
+      Digito := '0'
+   else
+      Digito := IntToStr(11 - RestoDiv);
+
+   novoCPF := novoCPF + Digito;
+
+   // Digito 2
+
+   Aux := 11;
+   Soma := 0;
+
+   for i := 1 to 10 do
+   begin
+      Soma := Soma + (StrToInt(novoCPF[i]) * Aux);
+      Aux := Aux - 1;
+   end;
+
+   RestoDiv := Soma mod 11;
+
+   if ((11 - RestoDiv) > 9) then
+      Digito := '0'
+   else
+      Digito := IntToStr(11 - RestoDiv);
+
+   novoCPF := novoCPF + Digito;
+
+   if (CPF <> novoCPF) then
+      Exit;
+
+   Result := True;
+end;
+
+function TfrmClientes.ValidaCNPJ: Boolean;
+var
+   i    : Integer;
+   Aux  : Integer;
+   CNPJ  : String;
+   Soma : Integer;
+   novoCNPJ  : String;
+   RestoDiv : Integer;
+   Digito  : String;
+begin
+   Result := False;
+
+   CNPJ := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+
+   if (Length(CNPJ) <> 14) then
+      Exit;
+
+   // Digito 1
+   Aux := 5;
+   Soma := 0;
+
+   for i := 1 to 12 do
+   begin
+      Soma := Soma + (StrToInt(CNPJ[i]) * Aux);
+      if (i = 4) then
+         Aux := 9
+      else
+         Aux := Aux - 1;
+
+      novoCNPJ := novoCNPJ + CNPJ[i];
+   end;
+
+   RestoDiv := Soma mod 11;
+
+   if (RestoDiv < 2) then
+      Digito := '0'
+   else
+      Digito := IntToStr(11 - RestoDiv);
+
+   novoCNPJ := novoCNPJ + Digito;
+
+   // Digito 2
+
+   Aux := 6;
+   Soma := 0;
+
+   for i := 1 to 13 do
+   begin
+      Soma := Soma + (StrToInt(CNPJ[i]) * Aux);
+      if (i = 5) then
+         Aux := 9
+      else
+         Aux := Aux - 1;
+   end;
+
+   RestoDiv := Soma mod 11;
+
+   if (RestoDiv < 2) then
+      Digito := '0'
+   else
+      Digito := IntToStr(11 - RestoDiv);
+
+   novoCNPJ := novoCNPJ + Digito;
+
+   if (CNPJ <> novoCNPJ) then
+      Exit;
+
+   Result := True;
 end;
 
 end.

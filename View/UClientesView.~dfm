@@ -423,7 +423,7 @@ object frmClientes: TfrmClientes
       Top = 17
       Width = 185
       Height = 37
-      Caption = ' Tipo de Pessoa'
+      Caption = ' c '
       Columns = 2
       ItemIndex = 0
       Items.Strings = (
@@ -435,12 +435,12 @@ object frmClientes: TfrmClientes
     object edtCPFCNPJ: TMaskEdit
       Left = 448
       Top = 28
-      Width = 120
+      Width = 115
       Height = 21
-      EditMask = '000\.000\.000\-00;1;_'
-      MaxLength = 14
+      EditMask = ' 000\.000\.000\-00;1;_'
+      MaxLength = 15
       TabOrder = 3
-      Text = '   .   .   -  '
+      Text = '    .   .   -  '
     end
     object edtNome: TEdit
       Left = 58
