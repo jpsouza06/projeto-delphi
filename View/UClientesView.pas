@@ -108,9 +108,7 @@ type
      function ValidaCliente  : Boolean;
      function ValidaEndereco : Boolean;
 
-     function ProcessaValidacaoCPFCNJ   : Boolean;
-     function ValidaCPF                 : Boolean;
-     function ValidaCNPJ                : Boolean;
+     function ValidaCPFCNJ(pTipoPessoa : Integer) : Boolean;
   public
     { Public declarations }
   end;
@@ -639,7 +637,7 @@ begin
       Exit;
    end;
 
-   if (not ProcessaValidacaoCPFCNJ) then
+   if (not ValidaCPFCNJ(rdgTipoPessoa.ItemIndex)) then
    begin
       if edtCPFCNPJ.CanFocus then
          edtCPFCNPJ.SetFocus;
@@ -934,163 +932,93 @@ begin
       Result := True;
    end;
 end;
-function TfrmClientes.ValidaCPF: Boolean;
-var
-   i    : Integer;
-   Aux  : Integer;
-   Contador : Integer;
-   CPF  : String;
-   Soma : Integer;
-   novoCPF  : String;
-   RestoDiv : Integer;
-   Digito  : String;
 
+function TfrmClientes.ValidaCPFCNJ(pTipoPessoa : Integer): Boolean;
+var
+   xTamanho  : Integer;
+   i        : Integer;
+   xAux      : Integer;
+   xContador : Integer;
+   xCPF      : String;
+   xCNPJ     : String;
+   xSoma     : Integer;
+   xNovoCPF  : String;
+   xNovoCNPJ : String;
+   xRestoDiv : Integer;
+   xDigito   : String;
 begin
    Result := False;
 
-   CPF := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+   xTamanho := Length(TFuncoes.SoNumero(edtCPFCNPJ.Text));
 
-   Contador := 0;
-
-   for i := 1 to 10 do
-   begin
-      if(AnsiCompareText(CPF[i], CPF[i + 1]) = 0) then
-         Contador := Contador + 1;
-   end;
-
-   if (Contador = 10) then
-      Exit;
-
-   // Digito 1
-   Aux := 10;
-   Soma := 0;
-
-   for i := 1 to 9 do
-   begin
-      Soma := Soma + (StrToInt(CPF[i]) * Aux);
-      Aux := Aux - 1;
-
-      novoCPF := novoCPF + CPF[i];
-   end;
-
-   RestoDiv := Soma mod 11;
-
-   if ((11 - RestoDiv) > 9) then
-      Digito := '0'
-   else
-      Digito := IntToStr(11 - RestoDiv);
-
-   novoCPF := novoCPF + Digito;
-
-   // Digito 2
-
-   Aux := 11;
-   Soma := 0;
-
-   for i := 1 to 10 do
-   begin
-      Soma := Soma + (StrToInt(novoCPF[i]) * Aux);
-      Aux := Aux - 1;
-   end;
-
-   RestoDiv := Soma mod 11;
-
-   if ((11 - RestoDiv) > 9) then
-      Digito := '0'
-   else
-      Digito := IntToStr(11 - RestoDiv);
-
-   novoCPF := novoCPF + Digito;
-
-   if (AnsiCompareText(CPF, novoCPF) <> 0) then
-      Exit;
-
-
-   Result := True;
-end;
-
-function TfrmClientes.ValidaCNPJ: Boolean;
-var
-   i    : Integer;
-   Aux  : Integer;
-   CNPJ  : String;
-   Soma : Integer;
-   novoCNPJ  : String;
-   RestoDiv : Integer;
-   Digito  : String;
-begin
-   Result := False;
-
-   CNPJ := TFuncoes.SoNumero(edtCPFCNPJ.Text);
-
-   // Digito 1
-   Aux := 5;
-   Soma := 0;
-
-   for i := 1 to 12 do
-   begin
-      Soma := Soma + (StrToInt(CNPJ[i]) * Aux);
-      if (i = 4) then
-         Aux := 9
-      else
-         Aux := Aux - 1;
-
-      novoCNPJ := novoCNPJ + CNPJ[i];
-   end;
-
-   RestoDiv := Soma mod 11;
-
-   if (RestoDiv > 9) then
-      Digito := '0'
-   else
-      Digito := IntToStr(11 - RestoDiv);
-
-   novoCNPJ := novoCNPJ + Digito;
-
-   // Digito 2
-
-   Aux := 6;
-   Soma := 0;
-
-   for i := 1 to 13 do
-   begin
-      Soma := Soma + (StrToInt(CNPJ[i]) * Aux);
-      if (i = 5) then
-         Aux := 9
-      else
-         Aux := Aux - 1;
-   end;
-
-   RestoDiv := Soma mod 11;
-
-   if (RestoDiv > 9) then
-      Digito := '0'
-   else
-      Digito := IntToStr(11 - RestoDiv);
-
-   novoCNPJ := novoCNPJ + Digito;
-
-   if (AnsiCompareText(CNPJ, novoCNPJ) <> 0) then
-      Exit;
-
-   Result := True;
-end;
-
-function TfrmClientes.ProcessaValidacaoCPFCNJ: Boolean;
-var
-   Tamanho : Integer;
-begin
-   Result := False;
-
-   Tamanho := Length(TFuncoes.SoNumero(edtCPFCNPJ.Text));
-
-   if (Tamanho = 0 ) then
+   if (xTamanho = 0 ) then
       Exit;
 
    // VALIDA CPF
-   if (rdgTipoPessoa.ItemIndex = 0) and (Tamanho = 11) then
-   begin
-      if (not ValidaCPF) then
+   if (pTipoPessoa = 0) and (xTamanho = 11) then
+     begin
+      xCPF := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+
+      xContador := 0;
+
+      for i := 1 to 10 do
+      begin
+         if(AnsiCompareText(xCPF[i], xCPF[i + 1]) = 0) then
+           xContador := xContador + 1;
+      end;
+
+      if (xContador = 10) then
+      begin
+         TMessageUtil.Alerta('CPF inválido.');
+
+         if (edtCPFCNPJ.CanFocus) then
+         edtCPFCNPJ.SetFocus;
+
+         Exit;
+      end;
+
+      // Digito 1
+      xAux := 10;
+      xSoma := 0;
+
+      for i := 1 to 9 do
+      begin
+         xSoma := xSoma + (StrToInt(xCPF[i]) * xAux);
+         xAux := xAux - 1;
+
+         xNovoCPF := xNovoCPF + xCPF[i];
+      end;
+
+      xRestoDiv := xSoma mod 11;
+
+      if ((11 - xRestoDiv) > 9) then
+         xDigito := '0'
+      else
+         xDigito := IntToStr(11 - xRestoDiv);
+
+      xNovoCPF := xNovoCPF + xDigito;
+
+      // Digito 2
+
+      xAux := 11;
+      xSoma := 0;
+
+      for i := 1 to 10 do
+      begin
+         xSoma := xSoma + (StrToInt(xNovoCPF[i]) * xAux);
+         xAux := xAux - 1;
+      end;
+
+      xRestoDiv := xSoma mod 11;
+
+      if ((11 - xRestoDiv) > 9) then
+         xDigito := '0'
+      else
+         xDigito := IntToStr(11 - xRestoDiv);
+
+      xNovoCPF := xNovoCPF + xDigito;
+
+      if (AnsiCompareText(xCPF, xNovoCPF) <> 0) then
       begin
          TMessageUtil.Alerta('CPF inválido.');
 
@@ -1099,8 +1027,10 @@ begin
 
          Exit;
       end;
+
+      Exit;
    end
-   else if (rdgTipoPessoa.ItemIndex = 0) and (Tamanho <> 11) then
+   else if (pTipoPessoa = 0) and (xTamanho <> 11) then
    begin
       TMessageUtil.Alerta('CPF incompleto.');
 
@@ -1112,19 +1042,71 @@ begin
 
 
    // VALIDA CNPJ
-   if (rdgTipoPessoa.ItemIndex = 1) and (Tamanho = 14) then
+   if (pTipoPessoa = 1) and (xTamanho = 14) then
    begin
-      if (not ValidaCNPJ) then
-      begin
-         TMessageUtil.Alerta('CNPJ inválido.');
+      Result := False;
 
-         if (edtCPFCNPJ.CanFocus) then
-            edtCPFCNPJ.SetFocus;
+       xCNPJ := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+
+       // Digito 1
+       xAux := 5;
+       xSoma := 0;
+
+       for i := 1 to 12 do
+       begin
+          xSoma := xSoma + (StrToInt(xCNPJ[i]) * xAux);
+          if (i = 4) then
+             xAux := 9
+          else
+             xAux := xAux - 1;
+
+          xNovoCNPJ := xNovoCNPJ + xCNPJ[i];
+       end;
+
+       xRestoDiv := xSoma mod 11;
+
+       if (xRestoDiv > 9) then
+          xDigito := '0'
+       else
+          xDigito := IntToStr(11 - xRestoDiv);
+
+       xNovoCNPJ := xNovoCNPJ + xDigito;
+
+       // Digito 2
+
+       xAux := 6;
+       xSoma := 0;
+
+       for i := 1 to 13 do
+       begin
+          xSoma := xSoma + (StrToInt(xCNPJ[i]) * xAux);
+          if (i = 5) then
+             xAux := 9
+          else
+             xAux := xAux - 1;
+       end;
+
+       xRestoDiv := xSoma mod 11;
+
+       if (xRestoDiv > 9) then
+          xDigito := '0'
+       else
+          xDigito := IntToStr(11 - xRestoDiv);
+
+       xNovoCNPJ := xNovoCNPJ + xDigito;
+
+       if (AnsiCompareText(xCNPJ, xNovoCNPJ) <> 0) then
+       begin
+          TMessageUtil.Alerta('CNPJ inválido.');
+
+          if (edtCPFCNPJ.CanFocus) then
+             edtCPFCNPJ.SetFocus;
 
          Exit;
       end;
+      Exit;
    end
-   else if (rdgTipoPessoa.ItemIndex = 1) and (Tamanho <> 14) then
+   else if (pTipoPessoa = 1) and (xTamanho <> 14) then
    begin
       TMessageUtil.Alerta('CNPJ incompleto.');
 
@@ -1141,7 +1123,7 @@ procedure TfrmClientes.edtCPFCNPJKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
    if (Key = 13) then
-      ProcessaValidacaoCPFCNJ;
+      ValidaCPFCNJ(rdgTipoPessoa.ItemIndex);
 end;
 
 end.
