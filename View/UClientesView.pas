@@ -938,6 +938,7 @@ function TfrmClientes.ValidaCPF: Boolean;
 var
    i    : Integer;
    Aux  : Integer;
+   Contador : Integer;
    CPF  : String;
    Soma : Integer;
    novoCPF  : String;
@@ -948,6 +949,17 @@ begin
    Result := False;
 
    CPF := TFuncoes.SoNumero(edtCPFCNPJ.Text);
+
+   Contador := 0;
+
+   for i := 1 to 10 do
+   begin
+      if(AnsiCompareText(CPF[i], CPF[i + 1]) = 0) then
+         Contador := Contador + 1;
+   end;
+
+   if (Contador = 10) then
+      Exit;
 
    // Digito 1
    Aux := 10;
@@ -990,8 +1002,9 @@ begin
 
    novoCPF := novoCPF + Digito;
 
-   if (CPF <> novoCPF) then
+   if (AnsiCompareText(CPF, novoCPF) <> 0) then
       Exit;
+
 
    Result := True;
 end;
@@ -1010,9 +1023,6 @@ begin
 
    CNPJ := TFuncoes.SoNumero(edtCPFCNPJ.Text);
 
-   if (Length(CNPJ) <> 14) then
-      Exit;
-
    // Digito 1
    Aux := 5;
    Soma := 0;
@@ -1030,7 +1040,7 @@ begin
 
    RestoDiv := Soma mod 11;
 
-   if (RestoDiv < 2) then
+   if (RestoDiv > 9) then
       Digito := '0'
    else
       Digito := IntToStr(11 - RestoDiv);
@@ -1053,14 +1063,14 @@ begin
 
    RestoDiv := Soma mod 11;
 
-   if (RestoDiv < 2) then
+   if (RestoDiv > 9) then
       Digito := '0'
    else
       Digito := IntToStr(11 - RestoDiv);
 
    novoCNPJ := novoCNPJ + Digito;
 
-   if (CNPJ <> novoCNPJ) then
+   if (AnsiCompareText(CNPJ, novoCNPJ) <> 0) then
       Exit;
 
    Result := True;
