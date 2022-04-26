@@ -75,6 +75,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure edtCodigoExit(Sender: TObject);
     procedure rdgTipoPessoaClick(Sender: TObject);
+    procedure edtCPFCNPJKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
    private
     { Private declarations }
      vKey : Word;
@@ -105,8 +107,10 @@ type
 
      function ValidaCliente  : Boolean;
      function ValidaEndereco : Boolean;
-     function ValidaCPF      : Boolean;
-     function ValidaCNPJ     : Boolean;
+
+     function ProcessaValidacaoCPFCNJ   : Boolean;
+     function ValidaCPF                 : Boolean;
+     function ValidaCNPJ                : Boolean;
   public
     { Public declarations }
   end;
@@ -129,8 +133,6 @@ begin
       VK_RETURN: //Corresponde a tecla <ENTER>
       begin
          // Comando responsável para passar para o próximo campo do formulário
-
-
 
          Perform(WM_NextDlgCtl, 0, 0);
       end;
@@ -586,7 +588,6 @@ begin
    try
       Result := False;
 
-      xEndereco := nil;
       xID_Pessoa := 0;
 
       if (not ValidaEndereco) then
@@ -638,28 +639,12 @@ begin
       Exit;
    end;
 
-   // Se for CPF
-   if (rdgTipoPessoa.ItemIndex = 0) and
-      (not ValidaCPF) then
+   if (not ProcessaValidacaoCPFCNJ) then
    begin
-      TMessageUtil.Alerta('CPF inválido.');
-
       if edtCPFCNPJ.CanFocus then
          edtCPFCNPJ.SetFocus;
       Exit;
    end;
-
-   // Se for CNPJ
-   if (rdgTipoPessoa.ItemIndex = 1) and
-      (not ValidaCNPJ) then
-   begin
-      TMessageUtil.Alerta('CNPJ inválido.');
-
-      if edtCPFCNPJ.CanFocus then
-         edtCPFCNPJ.SetFocus;
-      Exit;
-   end;
-
 
    Result := True;
 end;
@@ -915,6 +900,7 @@ end;
 function TfrmClientes.ProcessaListagem: Boolean;
 begin
    try
+      Result := False;
       if (not cdsCliente.Active) then
          Exit;
 
@@ -944,6 +930,8 @@ begin
       vEstadoTela := etPadrao;
       DefineEstadoTela;
       cdsCliente.EmptyDataSet;
+
+      Result := True;
    end;
 end;
 function TfrmClientes.ValidaCPF: Boolean;
@@ -960,9 +948,6 @@ begin
    Result := False;
 
    CPF := TFuncoes.SoNumero(edtCPFCNPJ.Text);
-
-
-
 
    // Digito 1
    Aux := 10;
@@ -1079,6 +1064,74 @@ begin
       Exit;
 
    Result := True;
+end;
+
+function TfrmClientes.ProcessaValidacaoCPFCNJ: Boolean;
+var
+   Tamanho : Integer;
+begin
+   Result := False;
+
+   Tamanho := Length(TFuncoes.SoNumero(edtCPFCNPJ.Text));
+
+   if (Tamanho = 0 ) then
+      Exit;
+
+   // VALIDA CPF
+   if (rdgTipoPessoa.ItemIndex = 0) and (Tamanho = 11) then
+   begin
+      if (not ValidaCPF) then
+      begin
+         TMessageUtil.Alerta('CPF inválido.');
+
+         if (edtCPFCNPJ.CanFocus) then
+            edtCPFCNPJ.SetFocus;
+
+         Exit;
+      end;
+   end
+   else if (rdgTipoPessoa.ItemIndex = 0) and (Tamanho <> 11) then
+   begin
+      TMessageUtil.Alerta('CPF incompleto.');
+
+      if (edtCPFCNPJ.CanFocus) then
+         edtCPFCNPJ.SetFocus;
+
+      Exit;
+   end;
+
+
+   // VALIDA CNPJ
+   if (rdgTipoPessoa.ItemIndex = 1) and (Tamanho = 14) then
+   begin
+      if (not ValidaCNPJ) then
+      begin
+         TMessageUtil.Alerta('CNPJ inválido.');
+
+         if (edtCPFCNPJ.CanFocus) then
+            edtCPFCNPJ.SetFocus;
+
+         Exit;
+      end;
+   end
+   else if (rdgTipoPessoa.ItemIndex = 1) and (Tamanho <> 14) then
+   begin
+      TMessageUtil.Alerta('CNPJ incompleto.');
+
+      if (edtCPFCNPJ.CanFocus) then
+         edtCPFCNPJ.SetFocus;
+
+      Exit;
+   end;
+
+   Result := True;
+end;
+
+procedure TfrmClientes.edtCPFCNPJKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   if (Key = 13) then
+      ProcessaValidacaoCPFCNJ;
 end;
 
 end.

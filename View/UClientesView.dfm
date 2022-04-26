@@ -441,6 +441,7 @@ object frmClientes: TfrmClientes
       MaxLength = 15
       TabOrder = 3
       Text = '    .   .   -  '
+      OnKeyDown = edtCPFCNPJKeyDown
     end
     object edtNome: TEdit
       Left = 58
