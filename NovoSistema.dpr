@@ -22,7 +22,11 @@ uses
   UUnidadeProdutos in 'View\UUnidadeProdutos.pas',
   UUnidadadeProdutosDAO in 'View\UUnidadadeProdutosDAO.pas',
   UUnidadeProdutosController in 'Controller\UUnidadeProdutosController.pas',
-  UUnidadeProdutosPesqView in 'View\UUnidadeProdutosPesqView.pas' {frmUnidadeProdutosPesq};
+  UUnidadeProdutosPesqView in 'View\UUnidadeProdutosPesqView.pas' {frmUnidadeProdutosPesq},
+  UProdutosView in 'View\UProdutosView.pas' {frmProdutos},
+  UProdutos in 'Model\UProdutos.pas',
+  UProdutosDAO in 'Model\UProdutosDAO.pas',
+  UProdutosController in 'Controller\UProdutosController.pas';
 
 {$R *.res}
 

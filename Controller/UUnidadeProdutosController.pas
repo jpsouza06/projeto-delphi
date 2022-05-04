@@ -178,7 +178,12 @@ begin
             FreeAndNil(xUnidadeProdutosDAO);
       end;
    except
-
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao buscar os dados da unidade [Controller]: '#13+
+            e.Message);
+      end;
    end;
 end;
 

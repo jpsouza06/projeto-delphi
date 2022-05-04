@@ -1,8 +1,8 @@
 object frmPrincipal: TfrmPrincipal
-  Left = 926
-  Top = 210
-  Width = 648
-  Height = 590
+  Left = 626
+  Top = 163
+  Width = 859
+  Height = 659
   Caption = 'Novo Sistema'
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
@@ -21,8 +21,8 @@ object frmPrincipal: TfrmPrincipal
   object imgLogo: TImage
     Left = 0
     Top = 0
-    Width = 632
-    Height = 512
+    Width = 843
+    Height = 581
     Align = alClient
     Center = True
     Picture.Data = {
@@ -1105,8 +1105,8 @@ object frmPrincipal: TfrmPrincipal
   end
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 512
-    Width = 632
+    Top = 581
+    Width = 843
     Height = 19
     Panels = <
       item
@@ -1124,6 +1124,10 @@ object frmPrincipal: TfrmPrincipal
       end
       object menProdutos: TMenuItem
         Caption = 'Produtos'
+      end
+      object menUnidadeProdutos: TMenuItem
+        Caption = 'Unidade de Produtos'
+        OnClick = menUnidadeProdutosClick
       end
     end
     object menRelatorios: TMenuItem

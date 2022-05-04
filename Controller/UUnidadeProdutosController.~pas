@@ -136,8 +136,6 @@ begin
             xUnidadeProdutosDAO.Atualiza(
             pUnidadeProdutos,
             RetornaCondicaoUnidadeProdutos(pUnidadeProdutos.Id));
-
-            xUnidadeProdutosDAO.Deleta(RetornaCondicaoUnidadeProdutos(pUnidadeProdutos.Id));
          end;
 
          TConexao.get.confirmaTransacao;

@@ -1124,6 +1124,7 @@ object frmPrincipal: TfrmPrincipal
       end
       object menProdutos: TMenuItem
         Caption = 'Produtos'
+        OnClick = menProdutosClick
       end
       object menUnidadeProdutos: TMenuItem
         Caption = 'Unidade de Produtos'
