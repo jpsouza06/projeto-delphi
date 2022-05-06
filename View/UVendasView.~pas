@@ -1,0 +1,27 @@
+unit UVendasView;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls;
+
+type
+  TfrmVendas = class(TForm)
+    stbBarraStatus: TStatusBar;
+    pnlBotoes: TPanel;
+    pnl: TPanel;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmVendas: TfrmVendas;
+
+implementation
+
+{$R *.dfm}
+
+end.

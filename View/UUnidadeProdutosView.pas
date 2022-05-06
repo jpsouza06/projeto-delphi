@@ -592,6 +592,13 @@ begin
    try
       Result := False;
 
+      if (edtUnidade.Text = EmptyStr) then
+      begin
+         ProcessaConsulta;
+         Exit;
+      end;
+
+
       if (vObjUnidadeProdutos = nil) then
       begin
          TMessageUtil.Alerta(

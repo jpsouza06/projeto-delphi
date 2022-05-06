@@ -497,7 +497,7 @@ begin
 
       if (edtCodigo.Text = EmptyStr) then
       begin
-         TMessageUtil.Alerta('Código da Unidade não pode ficar em branco.');
+         TMessageUtil.Alerta('Código da unidade não pode ficar em branco.');
 
          if (edtCodigo.CanFocus) then
             edtCodigo.SetFocus;
@@ -514,7 +514,7 @@ begin
       else
       begin
          TMessageUtil.Alerta(
-            'Nenhuma Unidade encontrada para o código informado.');
+            'Nenhuma unidade encontrada para o código informado.');
 
          LimpaTela;
 
@@ -603,14 +603,14 @@ begin
          Exit;
       end;
       try
-         if (TMessageUtil.Pergunta('Confirma exclusão do cliente?')) then
+         if (TMessageUtil.Pergunta('Confirma exclusão da unidade?')) then
          begin
             Screen.Cursor := crHourGlass;
 
             TUnidadeProdutosController.getInstancia.ExcluiUnidadeProdutos(
                vObjUnidadeProdutos);
 
-            TMessageUtil.Informacao('Cliente excluido com sucesso.')
+            TMessageUtil.Informacao('Unidade excluida com sucesso.')
          end
          else
          begin

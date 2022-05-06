@@ -38,6 +38,8 @@ type
     procedure dbgUnidadeProdutosKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+    procedure FormKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
      vKey :Word;
@@ -236,6 +238,12 @@ procedure TfrmUnidadeProdutosPesq.FormShow(Sender: TObject);
 begin
    if (edtUnidade.CanFocus) then
       edtUnidade.SetFocus;
+end;
+
+procedure TfrmUnidadeProdutosPesq.FormKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   vKey := VK_CLEAR;
 end;
 
 end.

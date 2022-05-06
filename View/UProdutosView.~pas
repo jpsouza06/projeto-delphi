@@ -71,7 +71,7 @@ var
 implementation
 
 uses
-   uMessageUtil;
+   uMessageUtil, UClassFuncoes;
 
 {$R *.dfm}
 
@@ -95,7 +95,7 @@ begin
 
    edtCodigo.Text     := IntToStr(vObjProdutos.Id);
    edtDescricao.Text  := vObjProdutos.Descricao;
-   edtEstoque.Text    := FloatToStr(vObjProdutos.Estoque);
+   edtEstoque.Text    := FloatToStr(vObjProdutos.QuantidadeEstoque);
    edtPrecoVenda.Text := FloatToStr(vObjProdutos.PrecoVenda)
 
 end;
@@ -303,7 +303,7 @@ function TfrmProdutos.ProcessaProdutos: Boolean;
 begin
    try
       Result := False;
-      if (ValidaProduto) then
+      if (ProcessaProduto) then
       begin
          // Gravação no BD
          TProdutosController.getInstancia.GravaProdutos(vObjProdutos);
@@ -341,9 +341,9 @@ begin
       if (vObjProdutos = nil) then
          Exit;
 
-      vObjProdutos.Descricao  := edtDescricao.Text;
-      vObjProdutos.Estoque    := StrToFloat(edtEstoque.Text);
-      vObjProdutos.PrecoVenda := StrToFloat(edtPrecoVenda.Text);
+      vObjProdutos.Descricao         := edtDescricao.Text;
+      vObjProdutos.QuantidadeEstoque := StrToFloat(edtEstoque.Text);
+      vObjProdutos.PrecoVenda        := StrToFloat(edtPrecoVenda.Text);
 
       Result := True;
    except
@@ -379,9 +379,29 @@ begin
       Exit;
    end;
 
+    if (TFuncoes.IsNumero(edtEstoque.Text) = False) then
+   begin
+      TMessageUtil.Alerta('Estoque so pode conter números.');
+
+      if (edtEstoque.CanFocus) then
+         edtEstoque.SetFocus;
+
+      Exit;
+   end;
+
    if (edtPrecoVenda.Text = EmptyStr) then
    begin
       TMessageUtil.Alerta('Preço de venda não pode ficar em branco.');
+
+      if (edtPrecoVenda.CanFocus) then
+         edtPrecoVenda.SetFocus;
+
+      Exit;
+   end;
+
+    if (TFuncoes.IsNumero(edtPrecoVenda.Text) = False) then
+   begin
+      TMessageUtil.Alerta('Preço de venda so pode conter números.');
 
       if (edtPrecoVenda.CanFocus) then
          edtPrecoVenda.SetFocus;

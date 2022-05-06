@@ -1,0 +1,49 @@
+object frmVendas: TfrmVendas
+  Left = 414
+  Top = 181
+  Width = 760
+  Height = 547
+  Caption = 'Vendas'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsMDIForm
+  KeyPreview = True
+  OldCreateOrder = False
+  Visible = True
+  PixelsPerInch = 96
+  TextHeight = 13
+  object stbBarraStatus: TStatusBar
+    Left = 0
+    Top = 489
+    Width = 744
+    Height = 19
+    Panels = <
+      item
+        Width = 50
+      end
+      item
+        Width = 50
+      end>
+  end
+  object pnlBotoes: TPanel
+    Left = 0
+    Top = 408
+    Width = 744
+    Height = 81
+    Align = alBottom
+    TabOrder = 1
+  end
+  object pnl: TPanel
+    Left = 0
+    Top = 367
+    Width = 744
+    Height = 41
+    Align = alBottom
+    Caption = 'pnl'
+    TabOrder = 2
+  end
+end

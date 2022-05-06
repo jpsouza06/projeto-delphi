@@ -1141,6 +1141,7 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'Movimentos'
       object menVendas: TMenuItem
         Caption = 'Vendas'
+        OnClick = menVendasClick
       end
     end
     object menSair: TMenuItem

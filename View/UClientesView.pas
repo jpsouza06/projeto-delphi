@@ -768,6 +768,13 @@ begin
    try
       Result := False;
 
+      if (edtNome.Text = EmptyStr) then
+      begin
+         ProcessaConsulta;
+         Exit;
+      end;
+
+
       if (vObjCliente = nil) or
          (vObjColEndereco = nil) then
       begin

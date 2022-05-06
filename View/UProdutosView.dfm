@@ -1,8 +1,8 @@
 object frmProdutos: TfrmProdutos
-  Left = 620
-  Top = 309
+  Left = 779
+  Top = 284
   Width = 608
-  Height = 232
+  Height = 240
   Caption = 'Produtos'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,9 +23,9 @@ object frmProdutos: TfrmProdutos
   TextHeight = 13
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 174
+    Top = 179
     Width = 592
-    Height = 19
+    Height = 22
     Panels = <
       item
         Width = 70
@@ -36,18 +36,19 @@ object frmProdutos: TfrmProdutos
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 108
+    Top = 104
     Width = 592
-    Height = 66
+    Height = 75
     Align = alBottom
     TabOrder = 1
     object btnExcluir: TBitBtn
-      Left = 203
+      Left = 201
       Top = 8
       Width = 75
       Height = 25
       Caption = '&Excluir'
       TabOrder = 2
+      OnClick = btnExcluirClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -77,12 +78,13 @@ object frmProdutos: TfrmProdutos
         74170A74170A74170A74171B7E2742944C76B17DFFFFFFFFFFFF}
     end
     object btnPesquisar: TBitBtn
-      Left = 203
-      Top = 32
+      Left = 201
+      Top = 40
       Width = 75
       Height = 25
       Caption = '&Pesquisar'
       TabOrder = 4
+      OnClick = btnPesquisarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -112,7 +114,7 @@ object frmProdutos: TfrmProdutos
         A780BBA077A890608D652DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
     end
     object btnAlterar: TBitBtn
-      Left = 110
+      Left = 108
       Top = 8
       Width = 75
       Height = 25
@@ -148,7 +150,7 @@ object frmProdutos: TfrmProdutos
         FFFFFFFFFFFFFFFFFFFFFF427BDB44AFF7378AEEE2E7FCFFFFFF}
     end
     object btnIncluir: TBitBtn
-      Left = 18
+      Left = 16
       Top = 8
       Width = 75
       Height = 25
@@ -184,12 +186,13 @@ object frmProdutos: TfrmProdutos
         8637288637247C3267A567B7CDB7FFFFFFFFFFFFFFFFFFFFFFFF}
     end
     object btnConsultar: TBitBtn
-      Left = 18
-      Top = 32
+      Left = 16
+      Top = 40
       Width = 75
       Height = 25
       Caption = '&Consultar'
       TabOrder = 3
+      OnClick = btnConsultarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -219,8 +222,8 @@ object frmProdutos: TfrmProdutos
         CFCFDFDFDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
     end
     object btnSair: TBitBtn
-      Left = 498
-      Top = 32
+      Left = 496
+      Top = 40
       Width = 75
       Height = 25
       Caption = '&Sair'
@@ -255,7 +258,7 @@ object frmProdutos: TfrmProdutos
         A851CF9D4EC59346B98A40B38139CE9A47DFAB53E8B863E4B25F}
     end
     object btnCancelar: TBitBtn
-      Left = 498
+      Left = 496
       Top = 8
       Width = 75
       Height = 25
@@ -292,7 +295,7 @@ object frmProdutos: TfrmProdutos
         79F47179F47279F47178F4727AF4727AF47279F49499F6FFFFFF}
     end
     object btnConfirmar: TBitBtn
-      Left = 410
+      Left = 408
       Top = 8
       Width = 75
       Height = 25
@@ -333,7 +336,7 @@ object frmProdutos: TfrmProdutos
     Left = 0
     Top = 0
     Width = 592
-    Height = 108
+    Height = 104
     Align = alClient
     TabOrder = 2
     object lblCodigo: TLabel
@@ -357,7 +360,7 @@ object frmProdutos: TfrmProdutos
       ParentFont = False
     end
     object lblEstoque: TLabel
-      Left = 17
+      Left = 9
       Top = 69
       Width = 47
       Height = 13
@@ -370,7 +373,7 @@ object frmProdutos: TfrmProdutos
       ParentFont = False
     end
     object lblPrecoVenda: TLabel
-      Left = 147
+      Left = 143
       Top = 69
       Width = 92
       Height = 13
@@ -388,21 +391,24 @@ object frmProdutos: TfrmProdutos
       Width = 73
       Height = 21
       TabOrder = 0
+      OnExit = edtCodigoExit
     end
     object edtDescricao: TEdit
       Left = 207
       Top = 26
       Width = 354
       Height = 21
+      CharCase = ecUpperCase
       MaxLength = 100
       TabOrder = 1
     end
     object edtEstoque: TEdit
-      Left = 67
+      Left = 60
       Top = 66
       Width = 69
       Height = 21
       TabOrder = 2
+      OnKeyPress = edtEstoqueKeyPress
     end
     object edtPrecoVenda: TEdit
       Left = 246
@@ -410,6 +416,7 @@ object frmProdutos: TfrmProdutos
       Width = 92
       Height = 21
       TabOrder = 3
+      OnKeyPress = edtPrecoVendaKeyPress
     end
   end
 end
