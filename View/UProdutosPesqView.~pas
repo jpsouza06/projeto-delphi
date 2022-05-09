@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DB, DBClient, ComCtrls, ExtCtrls, Grids, DBGrids, StdCtrls,
-  Buttons, UProdutosController;
+  Buttons, UProdutosController, UProdutos;
 
 type
-  TfrmProdutoPesq = class(TForm)
+  TfrmProdutosPesq = class(TForm)
     grbFiltrar: TGroupBox;
     lblDescricao: TLabel;
     lblInfo: TLabel;
@@ -55,13 +55,16 @@ type
   end;
 
 var
-  frmProdutoPesq: TfrmProdutoPesq;
+  frmProdutosPesq: TfrmProdutosPesq;
 
 implementation
 
+uses
+   uMessageUtil;
+
 {$R *.dfm}
 
-procedure TfrmProdutoPesq.FormKeyDown(Sender: TObject; var Key: Word;
+procedure TfrmProdutosPesq.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
    vKey := Key;
@@ -90,7 +93,7 @@ begin
    end;
 end;
 
-procedure TfrmProdutoPesq.LimparTela;
+procedure TfrmProdutosPesq.LimparTela;
 var
    i : Integer;
 begin
@@ -107,7 +110,7 @@ begin
       edtDescricao.SetFocus;
 end;
 
-procedure TfrmProdutoPesq.ProcessaConfirmacao;
+procedure TfrmProdutosPesq.ProcessaConfirmacao;
 begin
    if (not cdsProduto.IsEmpty) then
    begin
@@ -121,12 +124,12 @@ begin
    begin
       TMessageUtil.Alerta('Nenhum produto selecionado.');
 
-      if (edtUnidade.CanFocus) then
-         edtUnidade.SetFocus;
+      if (edtDescricao.CanFocus) then
+         edtDescricao.SetFocus;
    end;
 end;
 
-procedure TfrmProdutoPesq.ProcessaPesquisa;
+procedure TfrmProdutosPesq.ProcessaPesquisa;
 var
    xListaProdutos : TColProdutos;
    xAux : Integer;
@@ -148,8 +151,8 @@ begin
                cdsProduto.Append;
                cdsProdutoID.Value   := xListaProdutos.Retorna(xAux).Id;
                cdsProdutoDescricao.Value := xListaProdutos.Retorna(xAux).Descricao;
-               cdsProdutoEstoque.Value := xListaProdutos.Retorna(xAux).Estoque;
-               cdsProdutoPrecoVenda.Value := xListaProdutos.Retorna(xAux).PrecpVenda;
+               cdsProdutoEstoque.Value := xListaProdutos.Retorna(xAux).QuantidadeEstoque;
+               cdsProdutoPrecoVenda.Value := xListaProdutos.Retorna(xAux).PrecoVenda;
 
                cdsProduto.Post;
             end;
@@ -184,26 +187,26 @@ begin
    end;
 end;
 
-procedure TfrmProdutoPesq.btnFiltrarClick(Sender: TObject);
+procedure TfrmProdutosPesq.btnFiltrarClick(Sender: TObject);
 begin
    mProdutoID := 0;
    mProduto := EmptyStr;
    ProcessaPesquisa;
 end;
 
-procedure TfrmProdutoPesq.btnConfirmarClick(Sender: TObject);
+procedure TfrmProdutosPesq.btnConfirmarClick(Sender: TObject);
 begin
    ProcessaConfirmacao;
 end;
 
-procedure TfrmProdutoPesq.btnLimparClick(Sender: TObject);
+procedure TfrmProdutosPesq.btnLimparClick(Sender: TObject);
 begin
    mProdutoID := 0;
    mProduto := EmptyStr;
    LimparTela;
 end;
 
-procedure TfrmProdutoPesq.btnSairClick(Sender: TObject);
+procedure TfrmProdutosPesq.btnSairClick(Sender: TObject);
 begin
    mProdutoID := 0;
    mProduto := EmptyStr;
@@ -211,17 +214,17 @@ begin
    Close;
 end;
 
-procedure TfrmProdutoPesq.cdsProdutoBeforeDelete(DataSet: TDataSet);
+procedure TfrmProdutosPesq.cdsProdutoBeforeDelete(DataSet: TDataSet);
 begin
    Abort;
 end;
 
-procedure TfrmProdutoPesq.dbgProdutosDblClick(Sender: TObject);
+procedure TfrmProdutosPesq.dbgProdutosDblClick(Sender: TObject);
 begin
    ProcessaConfirmacao;
 end;
 
-procedure TfrmProdutoPesq.dbgProdutosKeyDown(Sender: TObject;
+procedure TfrmProdutosPesq.dbgProdutosKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
    if (Key = VK_RETURN) and
@@ -229,13 +232,13 @@ begin
       btnConfirmar.SetFocus;
 end;
 
-procedure TfrmProdutoPesq.FormShow(Sender: TObject);
+procedure TfrmProdutosPesq.FormShow(Sender: TObject);
 begin
    if (edtDescricao.CanFocus) then
       edtDescricao.SetFocus;
 end;
 
-procedure TfrmProdutoPesq.FormKeyUp(Sender: TObject; var Key: Word;
+procedure TfrmProdutosPesq.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
    vKey := VK_CLEAR;

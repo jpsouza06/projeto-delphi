@@ -1,9 +1,9 @@
-object frmProdutoPesq: TfrmProdutoPesq
-  Left = 613
-  Top = 331
+object frmProdutosPesq: TfrmProdutosPesq
+  Left = 588
+  Top = 396
   Width = 610
   Height = 306
-  Caption = 'Pesquisa de Produto'
+  Caption = 'Pesquisa de Produtos'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -130,7 +130,7 @@ object frmProdutoPesq: TfrmProdutoPesq
           Expanded = False
           FieldName = 'PrecoVenda'
           Title.Caption = 'Pre'#231'o de venda'
-          Width = 132
+          Width = 112
           Visible = True
         end>
     end

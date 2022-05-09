@@ -28,7 +28,8 @@ uses
   UProdutosDAO in 'Model\UProdutosDAO.pas',
   UProdutosController in 'Controller\UProdutosController.pas',
   UProdutosPesqView in 'View\UProdutosPesqView.pas' {frmProdutosPesq},
-  UVendasView in 'View\UVendasView.pas' {frmVendas};
+  UVendasView in 'View\UVendasView.pas' {frmVendas},
+  UVendas in 'Model\UVendas.pas';
 
 {$R *.res}
 

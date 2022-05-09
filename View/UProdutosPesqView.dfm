@@ -1,6 +1,6 @@
 object frmProdutosPesq: TfrmProdutosPesq
-  Left = 588
-  Top = 396
+  Left = 698
+  Top = 313
   Width = 610
   Height = 306
   Caption = 'Pesquisa de Produtos'
