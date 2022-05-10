@@ -45,13 +45,17 @@ type
 
      vKey :Word;
 
+
+
      procedure LimparTela;
      procedure ProcessaPesquisa;
      procedure ProcessaConfirmacao;
   public
     { Public declarations }
-     mProdutoID   : Integer;
-     mProduto     : String;
+     mProdutoID         : Integer;
+     mProduto           : String;
+     mProdutoEstoque    : Double;
+     mProdutoPrecoVenda : Double;
   end;
 
 var
@@ -114,8 +118,11 @@ procedure TfrmProdutosPesq.ProcessaConfirmacao;
 begin
    if (not cdsProduto.IsEmpty) then
    begin
-      mProdutoID       := cdsProdutoID.Value;
-      mProduto         := cdsProdutoDescricao.Value;
+      mProdutoID         := cdsProdutoID.Value;
+      mProduto           := cdsProdutoDescricao.Value;
+      mProdutoEstoque    := cdsProdutoEstoque.Value;
+      mProdutoPrecoVenda := cdsProdutoPrecoVenda.Value;
+
       Self.ModalResult := mrOk;
       LimparTela;
       Close;

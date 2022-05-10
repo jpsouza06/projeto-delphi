@@ -122,7 +122,8 @@ begin
       vEstadoTela in [etIncluir, etAlterar, etConsultar];
    btnCancelar.Enabled :=
       vEstadoTela in [etIncluir, etAlterar, etConsultar];
-   btnLimpar.Enabled := vEstadoTela in [etIncluir];
+   btnLimpar.Enabled := vEstadoTela in [etIncluir, etAlterar];
+   btnCliente.Enabled := vEstadoTela in [etIncluir, etAlterar];
 
    case vEstadoTela of
       etPadrao:

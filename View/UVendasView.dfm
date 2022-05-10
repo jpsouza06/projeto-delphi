@@ -1,6 +1,6 @@
 object frmVendas: TfrmVendas
-  Left = 552
-  Top = 163
+  Left = 849
+  Top = 231
   Width = 670
   Height = 599
   Caption = 'Vendas'
@@ -41,7 +41,7 @@ object frmVendas: TfrmVendas
     Width = 654
     Height = 81
     Align = alBottom
-    TabOrder = 1
+    TabOrder = 4
     object btnConsultar: TBitBtn
       Left = 22
       Top = 40
@@ -227,7 +227,7 @@ object frmVendas: TfrmVendas
     Height = 100
     Align = alBottom
     Caption = 'Finalizar Venda'
-    TabOrder = 2
+    TabOrder = 3
     object lblTotalGeral: TLabel
       Left = 413
       Top = 31
@@ -371,7 +371,7 @@ object frmVendas: TfrmVendas
     Width = 654
     Height = 265
     Align = alBottom
-    TabOrder = 3
+    TabOrder = 2
     object dbgVenda: TDBGrid
       Left = 2
       Top = 15
@@ -385,6 +385,7 @@ object frmVendas: TfrmVendas
       TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
+      OnKeyPress = dbgVendaKeyPress
       Columns = <
         item
           Expanded = False
@@ -395,6 +396,7 @@ object frmVendas: TfrmVendas
         item
           Expanded = False
           FieldName = 'Descricao'
+          ReadOnly = True
           Title.Caption = 'Descri'#231#227'o'
           Width = 255
           Visible = True
@@ -402,6 +404,7 @@ object frmVendas: TfrmVendas
         item
           Expanded = False
           FieldName = 'Unidade'
+          ReadOnly = True
           Title.Caption = 'Und'
           Visible = True
         end
@@ -415,6 +418,7 @@ object frmVendas: TfrmVendas
         item
           Expanded = False
           FieldName = 'Preco'
+          ReadOnly = True
           Title.Caption = 'Pre'#231'o'
           Width = 94
           Visible = True
@@ -422,6 +426,7 @@ object frmVendas: TfrmVendas
         item
           Expanded = False
           FieldName = 'TotalProduto'
+          ReadOnly = True
           Title.Caption = 'Tot. Produto'
           Width = 104
           Visible = True
@@ -434,7 +439,7 @@ object frmVendas: TfrmVendas
     Width = 654
     Height = 95
     Align = alClient
-    TabOrder = 4
+    TabOrder = 1
     object lblNVenda: TLabel
       Left = 24
       Top = 24
@@ -459,15 +464,17 @@ object frmVendas: TfrmVendas
     object edtNVenda: TEdit
       Left = 80
       Top = 21
-      Width = 62
+      Width = 65
       Height = 21
       TabOrder = 0
     end
     object edtDataVenda: TEdit
       Left = 80
       Top = 63
-      Width = 62
+      Width = 65
       Height = 21
+      Enabled = False
+      ReadOnly = True
       TabOrder = 1
     end
     object edtClienteID: TEdit
@@ -476,6 +483,7 @@ object frmVendas: TfrmVendas
       Width = 62
       Height = 21
       TabOrder = 2
+      OnExit = edtClienteIDExit
     end
     object btnCliente: TBitBtn
       Left = 265
@@ -484,6 +492,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Enabled = False
       TabOrder = 3
+      OnClick = btnClienteClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF

@@ -45,7 +45,6 @@ type
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
-    procedure dtsClienteDataChange(Sender: TObject; Field: TField);
   private
     { Private declarations }
      vKey : Word;

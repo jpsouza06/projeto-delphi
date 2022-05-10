@@ -331,7 +331,6 @@ object frmClientesPesq: TfrmClientesPesq
   end
   object dtsCliente: TDataSource
     DataSet = cdsCliente
-    OnDataChange = dtsClienteDataChange
     Left = 9
     Top = 97
   end
