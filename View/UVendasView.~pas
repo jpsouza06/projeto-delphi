@@ -5,7 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, DB, DBClient,
-  Grids, DBGrids, NumEdit, UEnumerationUtil, UCliente, UVendas;
+  Grids, DBGrids, NumEdit, UEnumerationUtil, UCliente, UVendas, ToolEdit,
+  UClientesPesqView, UPessoaController, UProdutosPesqView, UProdutosController,
+  UProdutos;
 
 type
   TfrmVendas = class(TForm)
@@ -24,7 +26,6 @@ type
     edtClienteNome: TEdit;
     dbgVenda: TDBGrid;
     dtsVenda: TDataSource;
-    cdsVenda: TClientDataSet;
     cdsVendaID: TIntegerField;
     cdsVendaDescricao: TStringField;
     cdsVendaUnidade: TStringField;
@@ -41,6 +42,7 @@ type
     btnPesquisar: TBitBtn;
     btnSair: TBitBtn;
     edtTotalVenda: TNumEdit;
+    cdsVenda: TClientDataSet;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -50,6 +52,12 @@ type
       Shift: TShiftState);
     procedure btnIncluirClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
+    procedure btnClienteClick(Sender: TObject);
+    procedure edtClienteIDExit(Sender: TObject);
+    procedure dbgVendaKeyPress(Sender: TObject; var Key: Char);
+    procedure btnLimparClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnConfirmarClick(Sender: TObject);
   private
     { Private declarations }
      vKey : Word;
@@ -57,15 +65,31 @@ type
      vEstadoTela : TEstadoTela;
      vObjVendas: TVendas;
      vObjCliente: TCliente;
+     vObjProdutos: TProdutos;
 
      procedure CamposEnabled(pOpcao : Boolean);
      procedure LimpaTela;
      procedure DefineEstadoTela;
+     procedure LimpaGridVenda;
 
      procedure CarregaDadosTela;
 
+     procedure ProcessaTotalGeral;
+
+     function ProcessaConfirmacao     : Boolean;
+     function ProcessaInclusao        : Boolean;
+
+     function ProcessaVenda           : Boolean;
+
+     function PesquisaCliente         : Boolean;
+     function ProcessaConsultaCliente : Boolean;
+
+     function PesquisaProduto         : Boolean;
+     function ProcessaConsultaProduto : Boolean;
+
   public
     { Public declarations }
+     mTotalVenda : Double;
   end;
 
 var
@@ -88,27 +112,36 @@ begin
       if (Components[i] is TEdit) then
          (Components[i] as TEdit).Enabled := pOpcao;
 
-      if (Components[i] is TNumEdit) then
-         (Components[i] as TNumEdit).Enabled := pOpcao
-
    end;
+
+   edtDataVenda.Enabled := False;
 end;
 
 procedure TfrmVendas.CarregaDadosTela;
 begin
-   if (vObjVendas = nil) then
-      Exit;
+   if (vObjVendas <> nil) then
+   begin
+      edtNVenda.Text      := IntToStr(vObjVendas.Id);
+      edtDataVenda.Text   := FloatToStr(vObjVendas.DataVenda);
+      edtTotalVenda.Text  := FloatToStr(vObjVendas.TotalVenda);
+   end;
 
-   edtNVenda.Text      := IntToStr(vObjVendas.Id);
-   edtDataVenda.Text   := FloatToStr(vObjVendas.DataVenda);
-   edtTotalVenda.Text  := FloatToStr(vObjVendas.TotalVenda);
+   if (vObjCliente <> nil) then
+   begin
+      edtClienteID.Text   := IntToStr(vObjCliente.Id);
+      edtClienteNome.Text := vObjCliente.Nome;
+   end;
 
-
-   if (vObjCliente = nil) then
-      Exit;
-
-   edtClienteID.Text   := IntToStr(vObjCliente.Id);
-   edtClienteNome.Text := vObjCliente.Nome;
+   if (vObjProdutos <> nil) then
+   begin
+      cdsVendaDescricao.Value    := vObjProdutos.Descricao;
+      cdsVendaUnidade.Value      := 'UN';
+      cdsVendaQuantidade.Value   := 1;
+      cdsVendaPreco.Value        := vObjProdutos.PrecoVenda;
+      cdsVendaTotalProduto.Value := vObjProdutos.PrecoVenda;
+      cdsVenda.Append;
+      cdsVenda.Post;
+   end;
 end;
 
 procedure TfrmVendas.DefineEstadoTela;
@@ -134,7 +167,7 @@ begin
          stbBarraStatus.Panels[0].Text := EmptyStr;
          stbBarraStatus.Panels[1].Text := EmptyStr;
 
-          if (frmVendas<> nil) and
+          if (frmVendas <> nil) and
              (frmVendas.Active) and
              (btnIncluir.CanFocus) then
              btnIncluir.SetFocus;
@@ -170,6 +203,8 @@ end;
 procedure TfrmVendas.FormShow(Sender: TObject);
 begin
    DefineEstadoTela;
+
+   edtDataVenda.Text := DateTimeToStr(Date);
 end;
 
 procedure TfrmVendas.LimpaTela;
@@ -190,6 +225,9 @@ begin
 
    if (vObjCliente <> nil) then
      FreeAndNil(vObjCliente);
+
+   if (vObjProdutos <> nil) then
+      FreeAndNil(vObjProdutos);
 
    if (not cdsVenda.IsEmpty) then
       cdsVenda.EmptyDataSet;
@@ -252,6 +290,354 @@ begin
    end
    else
       Close;
+end;
+
+function TfrmVendas.PesquisaCliente: Boolean;
+begin
+  try
+     Result := False;
+     stbBarraStatus.Panels[1].Text := 'Pesquisa de cliente';
+
+     if (frmClientesPesq = nil) then
+     frmClientesPesq := TfrmClientesPesq.Create(Application);
+
+     frmClientesPesq.ShowModal;
+
+     if (frmClientesPesq.mClienteID <> 0) then
+     begin
+        edtClienteID.Text := IntToStr(frmClientesPesq.mClienteID);
+        edtClienteNome.Text := frmClientesPesq.mClienteNome;
+
+        if (dbgVenda.CanFocus) then
+           dbgVenda.SetFocus;
+     end
+     else
+     begin
+        if (edtClienteID.CanFocus) then
+           edtClienteID.SetFocus;
+     end;
+
+     frmClientesPesq.mClienteID   := 0;
+     frmClientesPesq.mClienteNome := EmptyStr;
+
+     stbBarraStatus.Panels[1].Text := EmptyStr;
+     Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados do cliente [View]. '#13+
+            e.Message);
+      end;
+   end
+end;
+
+procedure TfrmVendas.btnClienteClick(Sender: TObject);
+begin
+   PesquisaCliente;
+end;
+
+procedure TfrmVendas.edtClienteIDExit(Sender: TObject);
+begin
+   if (vKey = VK_RETURN) then
+   begin
+      if (edtClienteID.Text = EmptyStr) then
+      begin
+         PesquisaCliente;
+         Exit;
+      end;
+      ProcessaConsultaCliente;
+   end;
+
+   vKey := VK_CLEAR;
+end;
+
+function TfrmVendas.ProcessaConsultaCliente: Boolean;
+begin
+   try
+      Result := False;
+
+      vObjCliente :=
+         TCliente( TPessoaController.getInstancia.BuscaPessoa(
+            StrToIntDef(edtClienteId.Text, 0)));
+
+
+      if (vObjCliente <> nil) then
+      begin
+         CarregaDadosTela;
+
+         if (dbgVenda.CanFocus) then
+            dbgVenda.SetFocus;
+      end
+      else
+      begin
+         TMessageUtil.Alerta(
+            'Nenhum cliente encontrado para o código informado.');
+
+         if (edtClienteId.CanFocus) then
+            edtClienteId.SetFocus;
+
+         Exit;
+      end;
+
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados do cliente [View]. '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+function TfrmVendas.PesquisaProduto: Boolean;
+begin
+   try
+      Result := False;
+      stbBarraStatus.Panels[1].Text := 'Pesquisa de produtos';
+
+      if (frmProdutosPesq = nil) then
+      frmProdutosPesq := TfrmProdutosPesq.Create(Application);
+
+      frmProdutosPesq.ShowModal;
+
+       if (frmProdutosPesq.mProdutoID <> 0) then
+       begin
+          if (cdsVenda.RecordCount = 0) then
+          begin
+             cdsVenda.Append;
+             cdsVendaId.Value           := frmProdutosPesq.mProdutoId;
+             cdsVendaDescricao.Value    := frmProdutosPesq.mProduto;
+             cdsVendaUnidade.Value      := 'UN';
+             cdsVendaQuantidade.Value   := 1;
+             cdsVendaPreco.Value        := frmProdutosPesq.mProdutoPrecoVenda;
+             cdsVendaTotalProduto.Value := frmProdutosPesq.mProdutoPrecoVenda;
+             cdsVenda.Post;
+             cdsVenda.Append;
+             cdsVenda.Post;
+          end
+          else
+          begin
+          cdsVenda.Delete;
+          cdsVenda.Append;
+          cdsVendaId.Value           := frmProdutosPesq.mProdutoId;
+          cdsVendaDescricao.Value    := frmProdutosPesq.mProduto;
+          cdsVendaUnidade.Value      := 'UN';
+          cdsVendaQuantidade.Value   := 1;
+          cdsVendaPreco.Value        := frmProdutosPesq.mProdutoPrecoVenda;
+          cdsVendaTotalProduto.Value := frmProdutosPesq.mProdutoPrecoVenda;
+          cdsVenda.Post;
+          cdsVenda.Append;
+          cdsVenda.Post;
+          end;
+
+          if (dbgVenda.CanFocus) then
+             dbgVenda.SetFocus;
+       end
+       else
+       begin
+          if (dbgVenda.CanFocus) then
+             dbgVenda.SetFocus;
+       end;
+
+       frmProdutosPesq.mProdutoID   := 0;
+       frmProdutosPesq.mProduto := EmptyStr;
+       frmProdutosPesq.mProdutoPrecoVenda := 0;
+
+       stbBarraStatus.Panels[1].Text := EmptyStr;
+       Result := True;
+   except
+   on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados do produto [View]. '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+function TfrmVendas.ProcessaConsultaProduto: Boolean;
+begin
+    try
+      Result := False;
+
+      vObjProdutos :=
+         TProdutos(TProdutosController.getInstancia.BuscaProdutos(
+            cdsVendaID.Value));
+
+
+      if (vObjProdutos <> nil) then
+      begin
+         CarregaDadosTela;
+
+         if (dbgVenda.CanFocus) then
+            dbgVenda.SetFocus;
+      end
+      else
+      begin
+         TMessageUtil.Alerta(
+            'Nenhum produto encontrado para o código informado.');
+
+         if (dbgVenda.CanFocus) then
+            dbgVenda.SetFocus;
+
+         Exit;
+      end;
+
+      Result := True;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao consultar os dados do produto [View]. '#13+
+            e.Message);
+      end;
+   end;
+end;
+
+procedure TfrmVendas.dbgVendaKeyPress(Sender: TObject; var Key: Char);
+begin
+   if (vKey = VK_RETURN) and
+      (dbgVenda.SelectedIndex = 0) then
+   begin
+      if (cdsVendaId.Value = 0) then
+      begin
+         PesquisaProduto;
+         ProcessaTotalGeral;
+         Exit;
+      end;
+      ProcessaConsultaProduto;
+
+      ProcessaTotalGeral;
+   end;
+
+   if (vKey = VK_RETURN) and
+      (dbgVenda.SelectedIndex = 3) then
+   begin
+      cdsVendaTotalProduto.Value :=
+         (cdsVendaPreco.Value * cdsVendaQuantidade.Value);
+
+      ProcessaTotalGeral;
+   end;
+
+   vKey := VK_CLEAR;
+end;
+
+procedure TfrmVendas.LimpaGridVenda;
+begin
+      mTotalVenda := 0;
+      edtTotalVenda.Value := 0;
+
+      if (not cdsVenda.IsEmpty) then
+      cdsVenda.EmptyDataSet;
+
+      dbgVenda.SelectedIndex := 0;
+      if (dbgVenda.CanFocus) then
+         dbgVenda.SetFocus;
+end;
+
+procedure TfrmVendas.btnLimparClick(Sender: TObject);
+begin
+   LimpaGridVenda;
+end;
+
+procedure TfrmVendas.ProcessaTotalGeral;
+var
+   xAux : Integer;
+begin
+   mTotalVenda := 0;
+   cdsVenda.First;
+   if (not cdsVenda.IsEmpty) then
+   begin
+      for xAux := 0 to pred(cdsVenda.RecordCount - 1) do
+      begin
+         mTotalVenda := mTotalVenda + cdsVendaTotalProduto.Value;
+         cdsVenda.Next;
+      end;
+
+      edtTotalVenda.Text := FloatToStr(mTotalVenda);
+   end;
+end;
+
+procedure TfrmVendas.btnCancelarClick(Sender: TObject);
+begin
+   vEstadoTela := etPadrao;
+   DefineEstadoTela;
+end;
+
+procedure TfrmVendas.btnConfirmarClick(Sender: TObject);
+begin
+   ProcessaConfirmacao;
+end;
+
+function TfrmVendas.ProcessaConfirmacao: Boolean;
+begin
+   Result := False;
+   try
+      case vEstadoTela of
+         etIncluir: Result := ProcessaInclusao;
+//         etAlterar: Result := ProcessaAlteracao;
+//         etExcluir: Result := ProcessaExclusao;
+//         etConsultar: Result := ProcessaConsulta;
+      end;
+
+      if not Result then
+         Exit;
+   except
+      on E: Exception do
+         TMessageUtil.Alerta(E.Message)
+   end;
+
+   Result := True;
+end;
+
+function TfrmVendas.ProcessaInclusao: Boolean;
+begin
+   try
+      Result := False;
+
+      if ProcessaVenda then
+      begin
+         TMessageUtil.Informacao('Venda cadastrada com sucesso.'#13+
+         'Codigo cadastrado: '+ IntToStr(vObjVendas.Id));
+
+         vEstadoTela := etPadrao;
+         DefineEstadoTela;
+
+         Result := True;
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+         'Falha ao incluir os dados da venda [View]: '#13+
+         e.Message);
+      end;
+   end;
+end;
+
+function TfrmVendas.ProcessaVenda: Boolean;
+begin
+   try
+      Result := False;
+      if (ProcessaPessoa) and
+         (ProcessaEndereco) then
+      begin
+         // Gravação no BD
+         TPessoaController.getInstancia.GravaPessoa(
+            vObjCliente, vObjColEndereco);
+
+         Result := True;
+      end;
+   except
+      on E: Exception do
+      begin
+         Raise Exception.Create(
+            'Falha ao gravar os dados do cliente [View]: '#13+
+            e.Message);
+      end;
+   end;
 end;
 
 end.

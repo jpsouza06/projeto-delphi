@@ -478,7 +478,6 @@ begin
          etAlterar: Result := ProcessaAlteracao;
          etExcluir: Result := ProcessaExclusao;
          etConsultar: Result := ProcessaConsulta;
-
       end;
 
       if not Result then

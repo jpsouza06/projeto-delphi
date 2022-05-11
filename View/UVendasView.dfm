@@ -1,7 +1,7 @@
 object frmVendas: TfrmVendas
-  Left = 849
-  Top = 231
-  Width = 670
+  Left = 625
+  Top = 138
+  Width = 680
   Height = 599
   Caption = 'Vendas'
   Color = clBtnFace
@@ -25,7 +25,7 @@ object frmVendas: TfrmVendas
   object stbBarraStatus: TStatusBar
     Left = 0
     Top = 541
-    Width = 654
+    Width = 664
     Height = 19
     Panels = <
       item
@@ -38,7 +38,7 @@ object frmVendas: TfrmVendas
   object pnlBotoes: TPanel
     Left = 0
     Top = 460
-    Width = 654
+    Width = 664
     Height = 81
     Align = alBottom
     TabOrder = 4
@@ -223,7 +223,7 @@ object frmVendas: TfrmVendas
   object grbFinalizarVenda: TGroupBox
     Left = 0
     Top = 360
-    Width = 654
+    Width = 664
     Height = 100
     Align = alBottom
     Caption = 'Finalizar Venda'
@@ -248,6 +248,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = '&Limpar'
       TabOrder = 2
+      OnClick = btnLimparClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -283,6 +284,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = 'C&onfirmar'
       TabOrder = 0
+      OnClick = btnConfirmarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -319,6 +321,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = '&Cancelar'
       TabOrder = 1
+      OnClick = btnCancelarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFF5B57D9
@@ -368,14 +371,14 @@ object frmVendas: TfrmVendas
   object grbGrid: TGroupBox
     Left = 0
     Top = 95
-    Width = 654
+    Width = 664
     Height = 265
     Align = alBottom
     TabOrder = 2
     object dbgVenda: TDBGrid
       Left = 2
       Top = 15
-      Width = 650
+      Width = 660
       Height = 248
       Align = alClient
       DataSource = dtsVenda
@@ -428,7 +431,7 @@ object frmVendas: TfrmVendas
           FieldName = 'TotalProduto'
           ReadOnly = True
           Title.Caption = 'Tot. Produto'
-          Width = 104
+          Width = 95
           Visible = True
         end>
     end
@@ -436,7 +439,7 @@ object frmVendas: TfrmVendas
   object pnlArea: TPanel
     Left = 0
     Top = 0
-    Width = 654
+    Width = 664
     Height = 95
     Align = alClient
     TabOrder = 1
