@@ -1,7 +1,7 @@
 object frmProdutosPesq: TfrmProdutosPesq
   Left = 698
   Top = 313
-  Width = 610
+  Width = 636
   Height = 306
   Caption = 'Pesquisa de Produtos'
   Color = clBtnFace
@@ -10,6 +10,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnKeyDown = FormKeyDown
@@ -20,7 +21,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   object grbFiltrar: TGroupBox
     Left = 0
     Top = 0
-    Width = 594
+    Width = 620
     Height = 59
     Align = alClient
     Caption = 'Filtrar'
@@ -33,21 +34,21 @@ object frmProdutosPesq: TfrmProdutosPesq
       Caption = 'Descri'#231#227'o'
     end
     object lblInfo: TLabel
-      Left = 64
+      Left = 68
       Top = 8
       Width = 243
       Height = 13
       Caption = 'Digete todo ou parte do conte'#250'do a ser pesquisado'
     end
     object edtDescricao: TEdit
-      Left = 64
+      Left = 68
       Top = 22
       Width = 433
       Height = 21
       TabOrder = 0
     end
     object btnFiltrar: TBitBtn
-      Left = 504
+      Left = 508
       Top = 18
       Width = 75
       Height = 25
@@ -86,7 +87,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   object grbGrid: TGroupBox
     Left = 0
     Top = 59
-    Width = 594
+    Width = 620
     Height = 154
     Align = alBottom
     Caption = 'Resultado da busca'
@@ -94,7 +95,7 @@ object frmProdutosPesq: TfrmProdutosPesq
     object dbgProdutos: TDBGrid
       Left = 2
       Top = 15
-      Width = 590
+      Width = 616
       Height = 137
       Align = alClient
       DataSource = dtsProduto
@@ -139,7 +140,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   object pnlBotoes: TPanel
     Left = 0
     Top = 213
-    Width = 594
+    Width = 620
     Height = 35
     Align = alBottom
     TabOrder = 2
@@ -255,7 +256,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   object stbBarraStatus: TStatusBar
     Left = 0
     Top = 248
-    Width = 594
+    Width = 620
     Height = 19
     Panels = <>
   end

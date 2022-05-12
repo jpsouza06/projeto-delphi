@@ -5,7 +5,7 @@ interface
 uses SysUtils, Classes;
 
 type
-   TVendas = class(TPersistent)
+   TVenda = class(TPersistent)
       private
          vId         : Integer;
          vID_Cliente : Integer;
@@ -22,17 +22,17 @@ type
 
    end;
 
-   TColProdutos = class(Tlist)
+   TColVendas = class(Tlist)
       public
-         function Retorna(pIndex : Integer) : TVendas;
-         procedure Adiciona(pVendas : TVendas);
+         function Retorna(pIndex : Integer) : TVenda;
+         procedure Adiciona(pVendas : TVenda);
    end;
 
 implementation
 
 { TColProdutos }
 
-constructor TVendas.Create;
+constructor TVenda.Create;
 begin
    Self.vId         := 0;
    Self.vID_Cliente := 0;
@@ -41,14 +41,14 @@ begin
 
 end;
 
-procedure TColProdutos.Adiciona(pVendas: TVendas);
+procedure TColVendas.Adiciona(pVendas: TVenda);
 begin
-   Self.Add(TVendas(pVendas));
+   Self.Add(TVenda(pVendas));
 end;
 
-function TColProdutos.Retorna(pIndex: Integer): TVendas;
+function TColVendas.Retorna(pIndex: Integer): TVenda;
 begin
-   Result := TVendas(Self[pIndex]);
+   Result := TVenda(Self[pIndex]);
 end;
 
 end.

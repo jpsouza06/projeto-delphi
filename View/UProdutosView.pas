@@ -423,6 +423,7 @@ begin
       end;
    end;
 end;
+
 function TfrmProdutos.ProcessaProduto: Boolean;
 begin
    try

@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls, ExtCtrls, ComCtrls, Mask, Buttons, DB, DBClient,
   Grids, DBGrids, NumEdit, UEnumerationUtil, UCliente, UVendas, ToolEdit,
   UClientesPesqView, UPessoaController, UProdutosPesqView, UProdutosController,
-  UProdutos;
+  UProdutos, UVendaController;
 
 type
   TfrmVendas = class(TForm)
@@ -63,7 +63,7 @@ type
      vKey : Word;
 
      vEstadoTela : TEstadoTela;
-     vObjVenda: TVendas;
+     vObjVenda: TVenda;
      vObjCliente: TCliente;
      vObjProdutos: TProdutos;
 
@@ -81,6 +81,7 @@ type
 
      function ProcessaVenda_Item      : Boolean;
      function ProcessaVenda           : Boolean;
+     function ProcessaItem            : Boolean;
      function ValidaVenda             : Boolean;
 
      function PesquisaCliente         : Boolean;
@@ -141,8 +142,7 @@ begin
       cdsVendaQuantidade.Value   := 1;
       cdsVendaPreco.Value        := vObjProdutos.PrecoVenda;
       cdsVendaTotalProduto.Value := vObjProdutos.PrecoVenda;
-      cdsVenda.Append;
-      cdsVenda.Post;
+
    end;
 end;
 
@@ -166,6 +166,7 @@ begin
          CamposEnabled(False);
          LimpaTela;
 
+
          stbBarraStatus.Panels[0].Text := EmptyStr;
          stbBarraStatus.Panels[1].Text := EmptyStr;
 
@@ -183,6 +184,7 @@ begin
          CamposEnabled(True);
 
          edtNVenda.Enabled := False;
+         edtDataVenda.Text := DateTimeToStr(Date);
 
          if edtClienteId.CanFocus then
             edtClienteId.SetFocus;
@@ -233,6 +235,7 @@ begin
 
    if (not cdsVenda.IsEmpty) then
       cdsVenda.EmptyDataSet;
+
 
 end;
 
@@ -310,6 +313,7 @@ begin
         edtClienteID.Text := IntToStr(frmClientesPesq.mClienteID);
         edtClienteNome.Text := frmClientesPesq.mClienteNome;
 
+        dbgVenda.SelectedIndex := 0;
         if (dbgVenda.CanFocus) then
            dbgVenda.SetFocus;
      end
@@ -368,6 +372,8 @@ begin
       begin
          CarregaDadosTela;
 
+
+         dbgVenda.SelectedIndex := 0;
          if (dbgVenda.CanFocus) then
             dbgVenda.SetFocus;
       end
@@ -416,24 +422,21 @@ begin
              cdsVendaPreco.Value        := frmProdutosPesq.mProdutoPrecoVenda;
              cdsVendaTotalProduto.Value := frmProdutosPesq.mProdutoPrecoVenda;
              cdsVenda.Post;
-             cdsVenda.Append;
-             cdsVenda.Post;
+
           end
           else
           begin
-          cdsVenda.Delete;
-          cdsVenda.Append;
-          cdsVendaId.Value           := frmProdutosPesq.mProdutoId;
-          cdsVendaDescricao.Value    := frmProdutosPesq.mProduto;
-          cdsVendaUnidade.Value      := 'UN';
-          cdsVendaQuantidade.Value   := 1;
-          cdsVendaPreco.Value        := frmProdutosPesq.mProdutoPrecoVenda;
-          cdsVendaTotalProduto.Value := frmProdutosPesq.mProdutoPrecoVenda;
-          cdsVenda.Post;
-          cdsVenda.Append;
-          cdsVenda.Post;
+             cdsVenda.Edit;
+             cdsVendaId.Value           := frmProdutosPesq.mProdutoId;
+             cdsVendaDescricao.Value    := frmProdutosPesq.mProduto;
+             cdsVendaUnidade.Value      := 'UN';
+             cdsVendaQuantidade.Value   := 1;
+             cdsVendaPreco.Value        := frmProdutosPesq.mProdutoPrecoVenda;
+             cdsVendaTotalProduto.Value := frmProdutosPesq.mProdutoPrecoVenda;
+             cdsVenda.Post;
           end;
 
+          dbgVenda.SelectedIndex := 3;
           if (dbgVenda.CanFocus) then
              dbgVenda.SetFocus;
        end
@@ -473,6 +476,7 @@ begin
       begin
          CarregaDadosTela;
 
+         dbgVenda.SelectedIndex := 3;
          if (dbgVenda.CanFocus) then
             dbgVenda.SetFocus;
       end
@@ -499,7 +503,7 @@ begin
 end;
 
 procedure TfrmVendas.dbgVendaKeyPress(Sender: TObject; var Key: Char);
-begin
+   begin
    if (vKey = VK_RETURN) and
       (dbgVenda.SelectedIndex = 0) then
    begin
@@ -512,15 +516,33 @@ begin
       ProcessaConsultaProduto;
 
       ProcessaTotalGeral;
+      Exit;
    end;
 
    if (vKey = VK_RETURN) and
       (dbgVenda.SelectedIndex = 3) then
    begin
+
+      cdsVenda.Edit;
       cdsVendaTotalProduto.Value :=
-         (cdsVendaPreco.Value * cdsVendaQuantidade.Value);
+      (cdsVendaPreco.Value * cdsVendaQuantidade.Value);
+      cdsVenda.Post;
 
       ProcessaTotalGeral;
+
+      cdsVenda.Last;
+
+      if (cdsVendaId.Value <> 0) then
+      begin
+         cdsVenda.Append;
+         cdsVenda.Post;
+      end;
+
+      dbgVenda.SelectedIndex := 0;
+
+      if (dbgVenda.CanFocus) then
+         dbgVenda.SetFocus;
+
    end;
 
    vKey := VK_CLEAR;
@@ -552,7 +574,7 @@ begin
    cdsVenda.First;
    if (not cdsVenda.IsEmpty) then
    begin
-      for xAux := 0 to pred(cdsVenda.RecordCount - 1) do
+      for xAux := 0 to pred(cdsVenda.RecordCount) do
       begin
          mTotalVenda := mTotalVenda + cdsVendaTotalProduto.Value;
          cdsVenda.Next;
@@ -599,7 +621,7 @@ begin
    try
       Result := False;
 
-      if ProcessaVenda then
+      if ProcessaVenda_Item then
       begin
          TMessageUtil.Informacao('Venda cadastrada com sucesso.'#13+
          'Codigo cadastrado: '+ IntToStr(vObjVenda.Id));
@@ -623,7 +645,8 @@ function TfrmVendas.ProcessaVenda_Item: Boolean;
 begin
    try
       Result := False;
-      if (ProcessaVenda) then
+      if (ProcessaVenda) and
+         (ProcessaItem) then
       begin
          // Gravação no BD
          TVendaController.getInstancia.GravaVenda(vObjVenda);
@@ -634,7 +657,7 @@ begin
       on E: Exception do
       begin
          Raise Exception.Create(
-            'Falha ao gravar os dados do cliente [View]: '#13+
+            'Falha ao gravar os dados da venda [View]: '#13+
             e.Message);
       end;
    end;
@@ -662,8 +685,8 @@ begin
       if (vObjVenda = nil) then
          Exit;
 
-      vObjVenda.ID_Cliente :=  edtClienteID.Text;
-      vObjVenda.DataVenda  :=  StrToDate(edtDataVenda.Text);
+      vObjVenda.ID_Cliente := StrToInt(edtClienteID.Text);
+      vObjVenda.DataVenda  := StrToDate(edtDataVenda.Text);
       vObjVenda.TotalVenda := mTotalVenda;
 
       Result := True;
@@ -699,6 +722,10 @@ begin
       Exit;
    end;
    Result := True;
+end;
+function TfrmVendas.ProcessaItem: Boolean;
+begin
+   
 end;
 
 end.

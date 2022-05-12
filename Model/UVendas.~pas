@@ -1,54 +1,54 @@
-unit UVendas;
+unit UVenda;
 
 interface
 
 uses SysUtils, Classes;
 
 type
-   TVendas = class(TPersistent)
+   TVenda = class(TPersistent)
       private
          vId         : Integer;
          vID_Cliente : Integer;
-         vDataVenda  : Date;
+         vDataVenda  : TDateTime;
          vTotalVenda : Double;
 
       public
          constructor Create;
       published
-         property Id         : Integer read vID         write vID;
-         property ID_Cliente : Integer read vID_Cliente write vID_Cliente;
-         property DataVenda  : Date    read vDataVenda  write vDataVenda;
-         property TotalVenda : Double  read vTotalVenda write vTotalVenda;
+         property Id         : Integer   read vID         write vID;
+         property ID_Cliente : Integer   read vID_Cliente write vID_Cliente;
+         property DataVenda  : TDateTime read vDataVenda  write vDataVenda;
+         property TotalVenda : Double    read vTotalVenda write vTotalVenda;
 
    end;
 
    TColProdutos = class(Tlist)
       public
-         function Retorna(pIndex : Integer) : TVendas;
-         procedure Adiciona(pVendas : TVendas);
+         function Retorna(pIndex : Integer) : TVenda;
+         procedure Adiciona(pVendas : TVenda);
    end;
 
 implementation
 
 { TColProdutos }
 
-constructor TVendas.Create;
+constructor TVenda.Create;
 begin
    Self.vId         := 0;
    Self.vID_Cliente := 0;
-   Self.vDataVenda  := EmptyStr;
+   Self.vDataVenda  := 0;
    Self.vTotalVenda := 0;
 
 end;
 
-procedure TColProdutos.Adiciona(pVendas: TVendas);
+procedure TColProdutos.Adiciona(pVendas: TVenda);
 begin
-   Self.Add(TVendas(pVendas));
+   Self.Add(TVenda(pVendas));
 end;
 
-function TColProdutos.Retorna(pIndex: Integer): TVendas;
+function TColProdutos.Retorna(pIndex: Integer): TVenda;
 begin
-   Result := TVendas(Self[pIndex]);
+   Result := TVenda(Self[pIndex]);
 end;
 
 end.

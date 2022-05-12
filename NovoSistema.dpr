@@ -29,7 +29,11 @@ uses
   UProdutosController in 'Controller\UProdutosController.pas',
   UProdutosPesqView in 'View\UProdutosPesqView.pas' {frmProdutosPesq},
   UVendasView in 'View\UVendasView.pas' {frmVendas},
-  UVendas in 'Model\UVendas.pas';
+  UVendas in 'Model\UVendas.pas',
+  UVendaDAO in 'Model\UVendaDAO.pas',
+  UVendaController in 'Controller\UVendaController.pas',
+  UVendaItemDAO in 'Model\UVendaItemDAO.pas',
+  UVendaItem in 'Model\UVendaItem.pas';
 
 {$R *.res}
 
