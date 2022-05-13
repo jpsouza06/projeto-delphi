@@ -2,29 +2,32 @@ unit UVendaController;
 
 interface
 
-uses SysUtils, Math, StrUtils, UConexao, UVendas;
+uses SysUtils, Math, StrUtils, UConexao, UVendas, UVendaItem;
 
 type
    TVendaController = class
        public
           constructor Create;
           function GravaVenda(
-                      pVenda : TVenda) : Boolean;
+                      pVenda : TVenda;
+                      pVendaItem : TVendaItem) : Boolean;
 
-          function ExcluiVenda(pVenda : TVenda) : Boolean;
+//          function ExcluiVenda(pVenda : TVenda) : Boolean;
 
           function BuscaVenda(pID : Integer) : TVenda;
           function PesquisaVenda(pVendaId : String) : TColVendas;
+          function BuscaVendaItem(pID_Venda : Integer) : TColVendaItem;
 
           function RetornaCondicaoVenda(
-             pID_Venda : Integer) : String;
+             pID_Venda : Integer;
+             pRelacionada : Boolean = False) : String;
        published
           class function getInstancia : TVendaController;
    end;
 
 implementation
 
-uses UVendaDAO;
+uses UVendaDAO, UVendaItemDAO;
 
 var
    _instance: TVendaController;
@@ -60,48 +63,77 @@ begin
 end;
 
 
-constructor TVendaController.Create;
-begin
-   inherited Create;
-end;
-
-function TVendaController.ExcluiVenda(pVenda: TVenda): Boolean;
+function TVendaController.BuscaVendaItem(
+  pID_Venda: Integer): TColVendaItem;
 var
-   xVendaDAO :TVendaDAO;
+   xVendaItemDAO : TVendaItemDAO;
 begin
    try
       try
-         Result := False;
+         Result := nil;
 
-         TConexao.get.iniciaTransacao;
+         xVendaItemDAO :=
+            TVendaItemDAO.Create(TConexao.getInstance.getConn);
 
-         xVendaDAO :=
-            TVendaDAO.Create(TConexao.get.getConn);
-
-         if (pVenda.Id = 0) then
-            Exit
-         else
-         begin
-            xVendaDAO.Deleta(
-               RetornaCondicaoVenda(pVenda.Id));
-         end;
-
-         TConexao.get.confirmaTransacao;
-
-         Result := True;
+            Result :=
+               xVendaItemDAO.RetornaLista(RetornaCondicaoVenda(pID_Venda, True));
       finally
-         if (xVendaDAO <> nil) then
-            FreeAndNil(xVendaDAO);
+         if(xVendaItemDAO <> nil) then
+            FreeAndNil(xVendaItemDAO);
       end;
    except
       on E: Exception do
       begin
          Raise Exception.Create(
-         'Falha ao excluir a venda [Controller]: '#13+
-         e.Message);
+         'Falha ao retornar dados dos itens da venda [Controller]: '#13+
+         e.Message)
       end;
    end;
 end;
+
+
+constructor TVendaController.Create;
+begin
+   inherited Create;
+end;
+
+//function TVendaController.ExcluiVenda(pVenda: TVenda): Boolean;
+//var
+//   xVendaDAO :TVendaDAO;
+//begin
+//   try
+//      try
+//         Result := False;
+//
+//         TConexao.get.iniciaTransacao;
+//
+//         xVendaDAO :=
+//            TVendaDAO.Create(TConexao.get.getConn);
+//
+//         if (pVenda.Id = 0) then
+//            Exit
+//         else
+//         begin
+//            xVendaDAO.Deleta(
+//               RetornaCondicaoVenda(pVenda.Id));
+//         end;
+//
+//         TConexao.get.confirmaTransacao;
+//
+//         Result := True;
+//      finally
+//         if (xVendaDAO <> nil) then
+//            FreeAndNil(xVendaDAO);
+//      end;
+//   except
+//      on E: Exception do
+//      begin
+//         Raise Exception.Create(
+//         'Falha ao excluir a venda [Controller]: '#13+
+//         e.Message);
+//      end;
+//   end;
+//end;
 
 class function TVendaController.getInstancia: TVendaController;
 begin
@@ -111,7 +143,9 @@ begin
       Result := _instance;
 end;
 
-function TVendaController.GravaVenda(pVenda: TVenda): Boolean;
+function TVendaController.GravaVenda(
+   pVenda: TVenda;
+   pVendaItem : TVendaItem): Boolean;
 var
    xVendaDAO : TVendaDAO;
 begin
@@ -164,7 +198,7 @@ begin
 
          xCondicao :=
             IfThen(pVendaId <> EmptyStr,
-            'WHERE                                            '#13+
+            'WHERE                               '#13+
             '    (ID LIKE(''%'+ pVendaId + '%''))'#13+
             'ORDER BY ID', EmptyStr);
 
@@ -183,7 +217,9 @@ begin
    end;
 end;
 
-function TVendaController.RetornaCondicaoVenda(pID_Venda: Integer): String;
+function TVendaController.RetornaCondicaoVenda(
+   pID_Venda: Integer;
+   pRelacionada : Boolean) : String;
 var
    xChave : String;
 begin

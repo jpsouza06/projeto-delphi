@@ -5,7 +5,7 @@ interface
 uses SysUtils, Classes;
 
 type
-   TEndereco = Class(TPersistent)
+   TVendaItem = Class(TPersistent)
       private
          vId            : Integer;
          vID_Venda      : Integer;
@@ -18,11 +18,11 @@ type
          constructor Create;
       published
          property Id            : Integer read vID             write vID;
-         property vID_Produto   : Integer read vID_Venda       write vID_Venda;
-         property vID_Produto   : Integer read vID_Produto     write vID_Produto;
-         property Quantidade    : String  read vQuantidade     write vQuantidade;
-         property ValorUnitario : String  read vValorUnitario  write vValorUnitario;
-         property TotalItem     : String  read vTotalItem      write vTotalItem;
+         property ID_Venda      : Integer read vID_Venda       write vID_Venda;
+         property ID_Produto    : Integer read vID_Produto     write vID_Produto;
+         property Quantidade    : Integer  read vQuantidade     write vQuantidade;
+         property ValorUnitario : Double  read vValorUnitario  write vValorUnitario;
+         property TotalItem     : Double  read vTotalItem      write vTotalItem;
    end;
 
    TColVendaItem = Class(TList)
@@ -34,7 +34,7 @@ implementation
 
 { TEndereco }
 
-constructor TEndereco.Create;
+constructor TVendaItem.Create;
 begin
    Self.vID             := 0;
    Self.vID_Venda       := 0;

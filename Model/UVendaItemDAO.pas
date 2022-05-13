@@ -6,7 +6,7 @@ uses SqlExpr, DBXpress, SimpleDS, Db, Classes, SysUtils, DateUtils,
 
 type
 
-   TEnderecoDAO = Class(TGenericDAO)
+   TVendaItemDAO = Class(TGenericDAO)
       public
          constructor Create(pConexao : TSQLConnection);
          function Insere(pVendaItem : TVendaItem) : Boolean;
@@ -20,13 +20,13 @@ implementation
 
 { TEnderecoDAO }
 
-function TEnderecoDAO.Atualiza(pVendaItem: TVendaItem;
+function TVendaItemDAO.Atualiza(pVendaItem: TVendaItem;
   pCondicao: String): Boolean;
 begin
    Result := inherited Atualiza(pVendaItem, pCondicao);
 end;
 
-constructor TEnderecoDAO.Create(pConexao: TSQLConnection);
+constructor TVendaItemDAO.Create(pConexao: TSQLConnection);
 begin
    inherited Create;
    vEntidade := 'VENDA_ITEM';
@@ -34,22 +34,22 @@ begin
    vClass    := TVendaItem;
 end;
 
-function TEnderecoDAO.Insere(pVendaItem: TVendaItem): Boolean;
+function TVendaItemDAO.Insere(pVendaItem: TVendaItem): Boolean;
 begin
    Result := inherited Insere(pVendaItem, 'ID');
 end;
 
-function TEnderecoDAO.InsereLista(pColVendaItem: TColVendaItem): Boolean;
+function TVendaItemDAO.InsereLista(pColVendaItem: TColVendaItem): Boolean;
 begin
    Result := inherited InsereLista(pColVendaItem);
 end;
 
-function TEnderecoDAO.Retorna(pCondicao: String): TVendaItem;
+function TVendaItemDAO.Retorna(pCondicao: String): TVendaItem;
 begin
    Result := TVendaItem (inherited Retorna(pCondicao));
 end;
 
-function TEnderecoDAO.RetornaLista(pCondicao: String): TColVendaItem;
+function TVendaItemDAO.RetornaLista(pCondicao: String): TColVendaItem;
 begin
    Result := TColVendaItem(inherited RetornaLista(pCondicao));
 end;

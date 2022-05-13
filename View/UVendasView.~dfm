@@ -1,6 +1,6 @@
 object frmVendas: TfrmVendas
-  Left = 625
-  Top = 138
+  Left = 404
+  Top = 139
   Width = 680
   Height = 599
   Caption = 'Vendas'
@@ -120,6 +120,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = '&Alterar'
       TabOrder = 1
+      OnClick = btnAlterarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E000000000000000000000A2B95062082
@@ -470,6 +471,7 @@ object frmVendas: TfrmVendas
       Width = 65
       Height = 21
       TabOrder = 0
+      OnExit = edtNVendaExit
     end
     object edtDataVenda: TEdit
       Left = 80

@@ -10,7 +10,7 @@ type
           constructor Create;
           function GravaVenda(
                       pVenda : TVenda;
-                      pVendaItem : TVendaItem) : Boolean;
+                      pColVendaItem : TColVendaItem) : Boolean;
 
 //          function ExcluiVenda(pVenda : TVenda) : Boolean;
 
@@ -145,9 +145,11 @@ end;
 
 function TVendaController.GravaVenda(
    pVenda: TVenda;
-   pVendaItem : TVendaItem): Boolean;
+   pColVendaItem : TColVendaItem): Boolean;
 var
    xVendaDAO : TVendaDAO;
+   xVendaItemDAO : TVendaItemDAO;
+   xAux : Integer;
 begin
    try
       try
@@ -158,21 +160,34 @@ begin
          xVendaDAO :=
             TVendaDAO.Create(TConexao.get.getConn);
 
+         xVendaItemDAO :=
+            TVendaItemDAO.Create(TConexao.get.getConn);
+
          if (pVenda.Id = 0) then
          begin
             xVendaDAO.Insere(pVenda);
+
+            for xAux := 0 to pred(pColVendaItem.Count) do
+               pColVendaItem.Retorna(xAux).ID_Venda := pVenda.Id;
+
+            xVendaItemDAO.InsereLista(pColVendaItem);
          end
          else
          begin
             xVendaDAO.Atualiza(
             pVenda,
             RetornaCondicaoVenda(pVenda.Id));
+
+            xVendaItemDAO.InsereLista(pColVendaItem);
          end;
 
          TConexao.get.confirmaTransacao;
       finally
          if (xVendaDAO <> nil) then
             FreeAndNil(xVendaDAO);
+
+         if (xVendaItemDAO <> nil) then
+            FreeAndNil(xVendaItemDAO);
       end;
    except
       on E: Exception do
@@ -198,7 +213,7 @@ begin
 
          xCondicao :=
             IfThen(pVendaId <> EmptyStr,
-            'WHERE                                            '#13+
+            'WHERE                               '#13+
             '    (ID LIKE(''%'+ pVendaId + '%''))'#13+
             'ORDER BY ID', EmptyStr);
 
@@ -217,7 +232,9 @@ begin
    end;
 end;
 
-function TVendaController.RetornaCondicaoVenda(pID_Venda: Integer): String;
+function TVendaController.RetornaCondicaoVenda(
+   pID_Venda: Integer;
+   pRelacionada : Boolean) : String;
 var
    xChave : String;
 begin
