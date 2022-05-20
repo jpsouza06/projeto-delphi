@@ -24,7 +24,7 @@ object frmVendas: TfrmVendas
   TextHeight = 13
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 541
+    Top = 542
     Width = 664
     Height = 19
     Panels = <
@@ -37,7 +37,7 @@ object frmVendas: TfrmVendas
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 460
+    Top = 461
     Width = 664
     Height = 81
     Align = alBottom
@@ -49,6 +49,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = '&Consultar'
       TabOrder = 2
+      OnClick = btnConsultarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -156,6 +157,7 @@ object frmVendas: TfrmVendas
       Height = 25
       Caption = '&Pesquisar'
       TabOrder = 3
+      OnClick = btnPesquisarClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
         18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
@@ -223,7 +225,7 @@ object frmVendas: TfrmVendas
   end
   object grbFinalizarVenda: TGroupBox
     Left = 0
-    Top = 360
+    Top = 361
     Width = 664
     Height = 100
     Align = alBottom
@@ -371,7 +373,7 @@ object frmVendas: TfrmVendas
   end
   object grbGrid: TGroupBox
     Left = 0
-    Top = 95
+    Top = 96
     Width = 664
     Height = 265
     Align = alBottom
@@ -441,7 +443,7 @@ object frmVendas: TfrmVendas
     Left = 0
     Top = 0
     Width = 664
-    Height = 95
+    Height = 96
     Align = alClient
     TabOrder = 1
     object lblNVenda: TLabel

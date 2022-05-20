@@ -59,7 +59,7 @@ type
      mClienteNome : String;
 
      procedure ProcessaPesquisa;
-     
+
   end;
 
 var

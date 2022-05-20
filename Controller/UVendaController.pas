@@ -15,19 +15,23 @@ type
 //          function ExcluiVenda(pVenda : TVenda) : Boolean;
 
           function BuscaVenda(pID : Integer) : TVenda;
-          function PesquisaVenda(pVendaId : String) : TColVendas;
+          function PesquisaVenda(
+             pVendaDataIni : String;
+             pVendaDataFin : String) : TColVendas;
           function BuscaVendaItem(pID_Venda : Integer) : TColVendaItem;
 
           function RetornaCondicaoVenda(
              pID_Venda : Integer;
              pRelacionada : Boolean = False) : String;
+
+
        published
           class function getInstancia : TVendaController;
    end;
 
 implementation
 
-uses UVendaDAO, UVendaItemDAO;
+uses UVendaDAO, UVendaItemDAO, UClassFuncoes;
 
 var
    _instance: TVendaController;
@@ -178,6 +182,8 @@ begin
             pVenda,
             RetornaCondicaoVenda(pVenda.Id));
 
+
+            xVendaItemDAO.Deleta(RetornaCondicaoVenda(pVenda.Id, True));
             xVendaItemDAO.InsereLista(pColVendaItem);
          end;
 
@@ -200,10 +206,12 @@ begin
    end;
 end;
 
-function TVendaController.PesquisaVenda(pVendaId: String): TColVendas;
+function TVendaController.PesquisaVenda(
+   pVendaDataIni: String;
+   pVendaDataFin : String) : TColVendas;
 var
    xVendaDAO : TVendaDAO;
-   xCondicao    : String;
+   xCondicao : String;
 begin
    try
       try
@@ -212,10 +220,10 @@ begin
          xVendaDAO := TVendaDAO.Create(TConexao.get.getConn);
 
          xCondicao :=
-            IfThen(pVendaId <> EmptyStr,
-            'WHERE                               '#13+
-            '    (ID LIKE(''%'+ pVendaId + '%''))'#13+
-            'ORDER BY ID', EmptyStr);
+            IfThen((pVendaDataIni <> EmptyStr) and (pVendaDataFin <> EmptyStr),
+            'WHERE                                                                     '#13+
+            '    DATAVENDA BETWEEN '+QuotedStr(TFuncoes.Troca(pVendaDataIni, '/', '.'))+#13+
+            'AND '+QuotedStr(TFuncoes.Troca(pVendaDataFin, '/', '.')), EmptyStr);
 
          Result := xVendaDAO.RetornaLista(xCondicao);
       finally
@@ -238,7 +246,10 @@ function TVendaController.RetornaCondicaoVenda(
 var
    xChave : String;
 begin
-   xChave := 'ID';
+   if (pRelacionada) then
+      xChave := 'ID_VENDA'
+   else
+      xChave := 'ID';
 
    Result :=
    'WHERE '#13+

@@ -50,13 +50,15 @@ type
      vKey : Word;
 
      procedure LimparTela;
-     procedure ProcessaPesquisa;
+//     procedure ProcessaPesquisa;
      procedure ProcessaConfirmacao;
      procedure PreenchePlanilha;
   public
     { Public declarations }
      mClienteID   : Integer;
      mClienteNome : String;
+
+     procedure ProcessaPesquisa;
      
   end;
 

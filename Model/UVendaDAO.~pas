@@ -11,10 +11,10 @@ type
       public
          constructor Create(pConexao : TSQLConnection);
          function Insere(pVenda : TVenda) : Boolean;
-         function InsereLista(pColVenda : TColVenda) : Boolean;
+         function InsereLista(pColVenda : TColVendas) : Boolean;
          function Atualiza(pVenda : TVenda; pCondicao : String) : Boolean;
          function Retorna(pCondicao : String) : TVenda;
-         function RetornaLista(pCondicao : String = '') : TColVenda;
+         function RetornaLista(pCondicao : String = '') : TColVendas;
    end;
 
 implementation
@@ -24,7 +24,7 @@ implementation
 
 function TVendaDAO.Atualiza(pVenda: TVenda; pCondicao: String): Boolean;
 begin
-   Result := inherited Atualiza(pVenda, pCondicao
+   Result := inherited Atualiza(pVenda, pCondicao);
 end;
 
 constructor TVendaDAO.Create(pConexao: TSQLConnection);
@@ -40,7 +40,7 @@ begin
    Result := inherited Insere(pVenda, 'ID')
 end;
 
-function TVendaDAO.InsereLista(pColVenda: TColVenda): Boolean;
+function TVendaDAO.InsereLista(pColVenda: TColVendas): Boolean;
 begin
       Result := inherited InsereLista(pColVenda)
 end;
@@ -50,10 +50,9 @@ begin
     Result := TVenda(inherited Retorna(pCondicao));
 end;
 
-function TVendaDAO.RetornaLista(pCondicao: String): TColVenda;
+function TVendaDAO.RetornaLista(pCondicao: String): TColVendas;
 begin
-   Result := pColVenda(inherited RetornaLista(pCondicao));
+   Result := TColVendas(inherited RetornaLista(pCondicao));
 end;
 
 end.
- 

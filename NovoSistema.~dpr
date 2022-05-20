@@ -31,7 +31,10 @@ uses
   UVendasView in 'View\UVendasView.pas' {frmVendas},
   UVendas in 'Model\UVendas.pas',
   UVendaDAO in 'Model\UVendaDAO.pas',
-  UVendaController in 'Controller\UVendaController.pas';
+  UVendaController in 'Controller\UVendaController.pas',
+  UVendaItemDAO in 'Model\UVendaItemDAO.pas',
+  UVendaItem in 'Model\UVendaItem.pas',
+  UVendasPesqView in 'View\UVendasPesqView.pas' {Form1};
 
 {$R *.res}
 

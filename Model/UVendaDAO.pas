@@ -14,7 +14,7 @@ type
          function InsereLista(pColVenda : TColVendas) : Boolean;
          function Atualiza(pVenda : TVenda; pCondicao : String) : Boolean;
          function Retorna(pCondicao : String) : TVenda;
-         function RetornaLista(pCondicao : String = '') : TColVendas;
+         function RetornaLista(pCondicao : String) : TColVendas;
    end;
 
 implementation
@@ -50,7 +50,7 @@ begin
     Result := TVenda(inherited Retorna(pCondicao));
 end;
 
-function TVendaDAO.RetornaLista(pCondicao: String): TColVendas;
+  function TVendaDAO.RetornaLista(pCondicao: String): TColVendas;
 begin
    Result := TColVendas(inherited RetornaLista(pCondicao));
 end;

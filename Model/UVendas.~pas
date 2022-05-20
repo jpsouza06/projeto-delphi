@@ -1,4 +1,4 @@
-unit UVenda;
+unit UVendas;
 
 interface
 
@@ -22,9 +22,10 @@ type
 
    end;
 
-   TColProdutos = class(Tlist)
+   TColVendas = class(Tlist)
       public
          function Retorna(pIndex : Integer) : TVenda;
+         procedure Delete(pIndex : Integer);
          procedure Adiciona(pVendas : TVenda);
    end;
 
@@ -41,12 +42,17 @@ begin
 
 end;
 
-procedure TColProdutos.Adiciona(pVendas: TVenda);
+procedure TColVendas.Adiciona(pVendas: TVenda);
 begin
    Self.Add(TVenda(pVendas));
 end;
 
-function TColProdutos.Retorna(pIndex: Integer): TVenda;
+procedure TColVendas.Delete(pIndex: Integer);
+begin
+   Self.Delete(pIndex);
+end;
+
+function TColVendas.Retorna(pIndex: Integer): TVenda;
 begin
    Result := TVenda(Self[pIndex]);
 end;

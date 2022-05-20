@@ -1,6 +1,6 @@
 object frmProdutosPesq: TfrmProdutosPesq
-  Left = 698
-  Top = 313
+  Left = 615
+  Top = 250
   Width = 636
   Height = 306
   Caption = 'Pesquisa de Produtos'
@@ -10,6 +10,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsMDIForm
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
@@ -22,7 +23,7 @@ object frmProdutosPesq: TfrmProdutosPesq
     Left = 0
     Top = 0
     Width = 620
-    Height = 59
+    Height = 60
     Align = alClient
     Caption = 'Filtrar'
     TabOrder = 0
@@ -86,7 +87,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   end
   object grbGrid: TGroupBox
     Left = 0
-    Top = 59
+    Top = 60
     Width = 620
     Height = 154
     Align = alBottom
@@ -139,7 +140,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 213
+    Top = 214
     Width = 620
     Height = 35
     Align = alBottom
@@ -255,7 +256,7 @@ object frmProdutosPesq: TfrmProdutosPesq
   end
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 248
+    Top = 249
     Width = 620
     Height = 19
     Panels = <>
