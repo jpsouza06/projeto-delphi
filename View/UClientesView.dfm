@@ -23,7 +23,7 @@ object frmClientes: TfrmClientes
   TextHeight = 13
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 320
+    Top = 321
     Width = 580
     Height = 19
     Panels = <
@@ -36,7 +36,7 @@ object frmClientes: TfrmClientes
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 250
+    Top = 251
     Width = 580
     Height = 70
     Align = alBottom
@@ -372,7 +372,7 @@ object frmClientes: TfrmClientes
     Left = 0
     Top = 0
     Width = 580
-    Height = 250
+    Height = 251
     Align = alClient
     TabOrder = 2
     object lblCodigo: TLabel

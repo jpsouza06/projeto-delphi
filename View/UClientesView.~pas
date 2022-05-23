@@ -636,7 +636,8 @@ begin
       Exit;
    end;
 
-   if (not ValidaCPFCNJ(rdgTipoPessoa.ItemIndex)) then
+   if (TFuncoes.SoNumero(edtCPFCNPJ.Text) <> EmptyStr) and
+      (not ValidaCPFCNJ(rdgTipoPessoa.ItemIndex)) then
    begin
       if edtCPFCNPJ.CanFocus then
          edtCPFCNPJ.SetFocus;
@@ -1033,7 +1034,7 @@ begin
 
          Exit;
       end;
-
+      Result := True;
       Exit;
    end
    else if (pTipoPessoa = 0) and (xTamanho <> 11) then
@@ -1110,6 +1111,8 @@ begin
 
          Exit;
       end;
+
+      Result := True;
       Exit;
    end
    else if (pTipoPessoa = 1) and (xTamanho <> 14) then
@@ -1122,7 +1125,7 @@ begin
       Exit;
    end;
 
-   Result := True;
+
 end;
 
 procedure TfrmClientes.edtCPFCNPJKeyDown(Sender: TObject; var Key: Word;

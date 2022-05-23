@@ -44,6 +44,11 @@ type
     procedure btnConfirmarClick(Sender: TObject);
     procedure btnLimparClick(Sender: TObject);
     procedure btnSairClick(Sender: TObject);
+    procedure edtDataInicioKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edtDataFinalKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
      vKey :Word;
@@ -53,8 +58,10 @@ type
      procedure LimparTela;
      procedure ProcessaPesquisa;
      procedure ProcessaConfirmacao;
-
      function ProcessaConsultaCliente : Boolean;
+
+     function ValidaData(pDataInicial : Boolean = True) : Boolean;
+
   public
     { Public declarations }
      mVendaID : Integer;
@@ -104,6 +111,9 @@ procedure TfrmVendasPesq.FormShow(Sender: TObject);
 begin
    if (edtDataInicio.CanFocus) then
       edtDataInicio.SetFocus;
+
+   edtDataInicio.Text := DateTimeToStr(Date);
+   edtDataFinal.Text := DateTimeToStr(Date);
 end;
 
 procedure TfrmVendasPesq.FormKeyUp(Sender: TObject; var Key: Word;
@@ -119,7 +129,7 @@ end;
 
 procedure TfrmVendasPesq.dbgVendaDblClick(Sender: TObject);
 begin
-//   ProcessaConfirmacao;
+   ProcessaConfirmacao;
 end;
 
 procedure TfrmVendasPesq.dbgVendaKeyDown(Sender: TObject; var Key: Word;
@@ -224,10 +234,10 @@ begin
 
          if(cdsVendas.RecordCount = 0) then
          begin
+            TMessageUtil.Alerta('Nenhuma venda encontrada para este filtro.');
+
             if(edtDataInicio.CanFocus) then
                edtDataInicio.SetFocus;
-
-            TMessageUtil.Alerta('Nenhuma venda encontrada para este filtro.');
          end
          else
          begin
@@ -255,6 +265,10 @@ procedure TfrmVendasPesq.btnPesquisarClick(Sender: TObject);
 begin
    mVendaID   := 0;
    mClienteID := 0;
+   if (not ValidaData) then
+      Exit
+   else if (not ValidaData(False)) then
+      Exit;
    ProcessaPesquisa;
 end;
 
@@ -317,6 +331,130 @@ begin
             e.Message);
       end;
    end;
+end;
+
+procedure TfrmVendasPesq.edtDataInicioKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+   if (vKey = 13) then
+      ValidaData;
+end;
+
+procedure TfrmVendasPesq.edtDataFinalKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+   if (vKey = 13) then
+      ValidaData(False);
+end;
+
+function TfrmVendasPesq.ValidaData(pDataInicial : Boolean) : Boolean;
+var
+   xTamanho : Integer;
+   xDataAtual : String;
+   xDataAux  : String;
+   xAux : String;
+begin
+   Result := False;
+
+   xDataAtual := DateTimeToStr(Date);
+
+   if (pDataInicial) then // Data Inicial
+   begin
+      xTamanho := Length(TFuncoes.SoNumero(edtDataInicio.Text));
+   end
+   else // Data Final
+   begin
+      xTamanho := Length(TFuncoes.SoNumero(edtDataFinal.Text));
+   end;
+
+   if (xTamanho = 0) then
+   begin
+      if (pDataInicial) then // Data Inicial
+      begin
+         edtDataInicio.Text := xDataAtual;
+      end
+      else // Data Final
+      begin
+         edtDataFinal.Text := xDataAtual;
+      end;
+      Exit;
+   end;
+
+   if (xTamanho = 2) then
+   begin
+      xAux := xDataAtual;
+
+      if (pDataInicial) then // Data Inicial
+      begin
+         xAux[1] := edtDataInicio.Text[1];
+         xAux[2] := edtDataInicio.Text[2];
+
+         edtDataInicio.Text := xAux;
+      end
+      else // Data Final
+      begin
+         xAux[1] := edtDataFinal.Text[1];
+         xAux[2] := edtDataFinal.Text[2];
+
+         edtDataFinal.Text := xAux;
+      end;
+
+      xTamanho := 8;
+   end;
+
+   if (xTamanho = 8) then
+   begin
+      xDataAtual := FormatDateTime('yyyy/mm/dd', Date);
+
+      if (pDataInicial) then // Data Inicial
+      begin
+         xAux := FormatDateTime('yyyy/mm/dd', StrToDate(edtDataInicio.Text));
+
+         if (xAux > xDataAtual) then
+         begin
+            TMessageUtil.Alerta('Data inicial não pode ser maior que a data atual');
+
+            if (edtDataInicio.CanFocus) then
+               edtDataInicio.SetFocus;
+
+            Exit;
+         end;
+      end
+      else // Data Final
+      begin
+         xAux := FormatDateTime('yyyy/mm/dd', StrToDate(edtDataFinal.Text));
+         xDataAux := FormatDateTime('yyyy/mm/dd', StrToDate(edtDataInicio.Text));
+
+         if (xAux > xDataAtual) then
+         begin
+            TMessageUtil.Alerta('Data final não pode ser maior que a data atual');
+
+            if (edtDataFinal.CanFocus) then
+               edtDataFinal.SetFocus;
+
+            Exit;
+         end;
+
+         if (xAux < xDataAux) then
+         begin
+            TMessageUtil.Alerta('Data final não pode ser menor que a data inicial');
+
+            if (edtDataFinal.CanFocus) then
+               edtDataFinal.SetFocus;
+
+            Exit;
+         end;
+      end;
+
+   end;
+   Result := True;
+end;
+
+procedure TfrmVendasPesq.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   Action := caFree;
+   frmVendasPesq := nil;
 end;
 
 end.

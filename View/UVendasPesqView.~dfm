@@ -14,6 +14,7 @@ object frmVendasPesq: TfrmVendasPesq
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnClose = FormClose
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   OnShow = FormShow
@@ -232,7 +233,7 @@ object frmVendasPesq: TfrmVendasPesq
       ParentFont = False
     end
     object lblTexto: TLabel
-      Left = 221
+      Left = 219
       Top = 27
       Width = 6
       Height = 13
@@ -284,22 +285,24 @@ object frmVendasPesq: TfrmVendasPesq
     object edtDataInicio: TMaskEdit
       Left = 143
       Top = 23
-      Width = 69
+      Width = 65
       Height = 21
-      EditMask = '!99/99/0000;1;_'
+      EditMask = '!99/99/9999;1;_'
       MaxLength = 10
       TabOrder = 0
       Text = '  /  /    '
+      OnKeyDown = edtDataInicioKeyDown
     end
     object edtDataFinal: TMaskEdit
       Left = 239
       Top = 23
-      Width = 69
+      Width = 65
       Height = 21
-      EditMask = '!99/99/0000;1;_'
+      EditMask = '!99/99/9999;1;_'
       MaxLength = 10
       TabOrder = 1
       Text = '  /  /    '
+      OnKeyDown = edtDataFinalKeyDown
     end
     object edtClienteID: TEdit
       Left = 143

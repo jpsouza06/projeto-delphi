@@ -1,6 +1,6 @@
 object frmVendas: TfrmVendas
-  Left = 404
-  Top = 139
+  Left = 503
+  Top = 99
   Width = 680
   Height = 599
   Caption = 'Vendas'
@@ -29,7 +29,7 @@ object frmVendas: TfrmVendas
     Height = 19
     Panels = <
       item
-        Width = 50
+        Width = 70
       end
       item
         Width = 50
@@ -192,7 +192,7 @@ object frmVendas: TfrmVendas
       Width = 75
       Height = 25
       Caption = '&Sair'
-      TabOrder = 4
+      TabOrder = 5
       OnClick = btnSairClick
       Glyph.Data = {
         36030000424D3603000000000000360000002800000010000000100000000100
@@ -221,6 +221,41 @@ object frmVendas: TfrmVendas
         FFFFFFFFFFFFFFFFFFFFFFFFECB05C301F1B231F206E5A449E8663BBA77CDDC1
         8CF1D399FEEBBAE3B164FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEAB968DB
         A851CF9D4EC59346B98A40B38139CE9A47DFAB53E8B863E4B25F}
+    end
+    object btnListar: TBitBtn
+      Left = 204
+      Top = 40
+      Width = 75
+      Height = 25
+      Caption = '&Listar'
+      TabOrder = 4
+      Glyph.Data = {
+        36030000424D3603000000000000360000002800000010000000100000000100
+        18000000000000030000C40E0000C40E00000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFD7C39BECE3D6ECE3D6ECE3D6ECE3D6ECE3D6ECE3D6D7C39BFFFF
+        FFFFFFFFFFFFFFFFFFFFB0ABABB0ABABA6A1A1716C72C4AB7FEDE1D5EDE1D5ED
+        E1D5EDE1D5EDE1D5EDE1D5C4AB7F767077A39E9EA8A3A3ABA5A5958F8FC3C0BF
+        C3C0BF837D84C6A874E0CBAEE0CBAEE0CBAEE0CBAEE0CBAEE0CBAEC6A874837D
+        84C3C0BFC3C0BF999292A49FA1D1CFCED1CFCED3D2D1D2D2D3D0D0D2D0D0D2D0
+        D0D2D0D0D2D0D0D2D0D0D2D2D2D3D3D2D1BACAD76E9BE3A49FA1AAA7A7D9D7D7
+        D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7D7D9D7
+        D78AC3E9004BFBABA8A8B7B3B3E6E8E9D6C5AFBC6B10BB6A0FBB6A0FBB6A0FBB
+        6A0FBB6A0FBB6A0FBB6A0FBB6A0FBC6B10D6C5AFE6E8E9B8B5B5BCB9BAEEF2F5
+        BA7B3EE1A942E1A842E1A842E1A842E1A842E1A842E1A842E1A842E1A842E1A9
+        42BA7B3EEEF2F5BFBBBCCDC8C9F8FCFFCD9753EEC670EEC771EEC771EEC771EE
+        C771EEC771EEC771EEC771EEC771EEC670CD9753F8FCFFCECBCCD2D0D0FCFFFF
+        D7A55CEDC977E9BF68E9BF68E9BF68E9BF68E9BF68E9BF68E9BF68E9BF68EDC9
+        77D7A55CFCFFFFD4D1D0DEDCDBFFFFFFE8C070E0AC54B99D6BD7BD91D7BD91D7
+        BD91D7BD91D7BD91D7BD91B99D6BE0AC54E8C070FFFFFFE3DFDFD0CACCBCBBBF
+        DEB572CF9E5EC4AB7FDFCAADDFCAADDFCAADDFCAADDFCAADDFCAADC4AB7FCC98
+        56DDB36EBDBCC0D0C9CBFFFFFFFFFFFFFFFFFFFFFFFFD0BD98ECDFD1ECDFD1EC
+        DFD1ECDFD1ECDFD1ECDFD1D0BD98FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFD5C4A4EFE4D8EFE4D8EFE4D8EFE4D8EFE4D8EFE4D8D5C4A4FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFDED0B8F5EDE4F5EDE4F5
+        EDE4F5EDE4F5EDE4F5EDE4DED0B8FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFE2D6C1F8F3EAF8F3EAF8F3EAF8F3EAF8F3EAF8F3EAE2D6C1FFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE6DCCCEFE8DBEFE8DBEF
+        E8DBEFE8DBEFE8DBEFE8DBE8DFD0FFFFFFFFFFFFFFFFFFFFFFFF}
     end
   end
   object grbFinalizarVenda: TGroupBox
@@ -391,6 +426,7 @@ object frmVendas: TfrmVendas
       TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
+      OnKeyDown = dbgVendaKeyDown
       OnKeyPress = dbgVendaKeyPress
       Columns = <
         item
@@ -579,5 +615,348 @@ object frmVendas: TfrmVendas
       DisplayWidth = 51
       FieldName = 'TotalProduto'
     end
+  end
+  object cdsListagemVenda: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    Left = 352
+    Top = 501
+    object cdsListagemVendaID: TStringField
+      FieldName = 'ID'
+      Size = 10
+    end
+    object cdsListagemVendaData: TStringField
+      FieldName = 'Data'
+    end
+    object cdsListagemVendaID_Cliente: TStringField
+      FieldName = 'ID_Cliente'
+      Size = 10
+    end
+    object cdsListagemVendaClienteNome: TStringField
+      FieldName = 'ClienteNome'
+    end
+    object cdsListagemVendaTotalVenda: TFloatField
+      FieldName = 'TotalVenda'
+    end
+    object cdsListagemVendaDescricaoProduto: TStringField
+      FieldName = 'DescricaoProduto'
+    end
+    object cdsListagemVendaQuantidadeProduto: TIntegerField
+      FieldName = 'QuantidadeProduto'
+    end
+    object cdsListagemVendaValorProduto: TFloatField
+      FieldName = 'ValorProduto'
+    end
+    object cdsListagemVendaValorItem: TFloatField
+      FieldName = 'ValorItem'
+    end
+  end
+  object frxListagemVenda: TfrxReport
+    Version = '4.9.72'
+    DataSet = frxDBVenda
+    DataSetName = 'frxDBVenda'
+    DotMatrixReport = False
+    IniFile = '\Software\Fast Reports'
+    PreviewOptions.Buttons = [pbPrint, pbLoad, pbSave, pbExport, pbZoom, pbFind, pbOutline, pbPageSetup, pbTools, pbEdit, pbNavigator, pbExportQuick]
+    PreviewOptions.Zoom = 1.000000000000000000
+    PrintOptions.Printer = 'Padr'#227'o'
+    PrintOptions.PrintOnSheet = 0
+    ReportOptions.CreateDate = 44704.487974652800000000
+    ReportOptions.LastChange = 44704.487974652800000000
+    ScriptLanguage = 'PascalScript'
+    ScriptText.Strings = (
+      'begin'
+      ''
+      'end.')
+    Left = 288
+    Top = 501
+    Datasets = <>
+    Variables = <
+      item
+        Name = ' Cabe'#231'alho'
+        Value = Null
+      end
+      item
+        Name = 'DATAHORA'
+        Value = Null
+      end>
+    Style = <>
+    object Data: TfrxDataPage
+      Height = 1000.000000000000000000
+      Width = 1000.000000000000000000
+    end
+    object Page1: TfrxReportPage
+      PaperWidth = 210.000000000000000000
+      PaperHeight = 297.000000000000000000
+      PaperSize = 9
+      LeftMargin = 10.000000000000000000
+      RightMargin = 10.000000000000000000
+      TopMargin = 10.000000000000000000
+      BottomMargin = 10.000000000000000000
+      object ReportTitle1: TfrxReportTitle
+        Height = 117.149660000000000000
+        Top = 18.897650000000000000
+        Width = 718.110700000000000000
+        object Memo1: TfrxMemoView
+          Left = 287.244280000000000000
+          Top = 7.897650000000000000
+          Width = 147.401670000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'LISTAGEM DE VENDA')
+          ParentFont = False
+        end
+        object Page: TfrxMemoView
+          Left = 627.401980000000000000
+          Top = 7.559060000000000000
+          Width = 79.370130000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = []
+          HAlign = haCenter
+          Memo.UTF8 = (
+            '[Page] / [TotalPages#]')
+          ParentFont = False
+        end
+        object DATAHORA: TfrxMemoView
+          Left = 18.897650000000000000
+          Top = 7.559060000000000000
+          Width = 86.929190000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Memo.UTF8 = (
+            '[DATAHORA]')
+        end
+        object Memo2: TfrxMemoView
+          Top = 31.236240000000000000
+          Width = 748.346940000000000000
+          Height = 11.338590000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = []
+          Frame.Style = fsDot
+          Frame.Typ = [ftBottom]
+          ParentFont = False
+        end
+        object Memo3: TfrxMemoView
+          Left = 17.000000000000000000
+          Top = 60.456710000000000000
+          Width = 64.252010000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Style = fsDot
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'N'#194#170' Venda')
+          ParentFont = False
+        end
+        object Memo4: TfrxMemoView
+          Left = 309.921460000000000000
+          Top = 60.456710000000000000
+          Width = 249.448980000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Style = fsDot
+          Frame.Typ = [ftBottom]
+          Memo.UTF8 = (
+            'Nome Cliente')
+          ParentFont = False
+        end
+        object Memo5: TfrxMemoView
+          Left = 188.976500000000000000
+          Top = 60.472480000000000000
+          Width = 105.826840000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'C'#195#179'digo Cliente')
+          ParentFont = False
+        end
+        object Memo6: TfrxMemoView
+          Left = 94.488250000000000000
+          Top = 60.472480000000000000
+          Width = 83.149660000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Data')
+          ParentFont = False
+        end
+        object Memo7: TfrxMemoView
+          Left = 572.575140000000000000
+          Top = 60.472480000000000000
+          Width = 94.488250000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Style = fsDot
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Total Venda')
+          ParentFont = False
+        end
+        object Memo8: TfrxMemoView
+          Left = -2.000000000000000000
+          Top = 83.149660000000000000
+          Width = 721.890230000000000000
+          Height = 7.559060000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          ParentFont = False
+        end
+      end
+      object Header1: TfrxHeader
+        Height = 75.590600000000000000
+        Top = 196.535560000000000000
+        Width = 718.110700000000000000
+        object Memo9: TfrxMemoView
+          Left = 18.897650000000000000
+          Top = 7.559060000000000000
+          Width = 94.488250000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'PRODUTOS')
+          ParentFont = False
+        end
+        object Memo10: TfrxMemoView
+          Left = 18.897650000000000000
+          Top = 49.133890000000000000
+          Width = 264.567100000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Descri'#195#167#195#163'o')
+          ParentFont = False
+        end
+        object Memo11: TfrxMemoView
+          Left = 291.181200000000000000
+          Top = 49.133890000000000000
+          Width = 139.842610000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Quantidade')
+          ParentFont = False
+        end
+        object Memo12: TfrxMemoView
+          Left = 442.362400000000000000
+          Top = 49.133890000000000000
+          Width = 113.385900000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Valor unit'#195#161'rio')
+          ParentFont = False
+        end
+        object Memo13: TfrxMemoView
+          Left = 563.307360000000000000
+          Top = 49.133890000000000000
+          Width = 105.826840000000000000
+          Height = 18.897650000000000000
+          ShowHint = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -13
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          Frame.Typ = [ftBottom]
+          HAlign = haCenter
+          Memo.UTF8 = (
+            'Total Item')
+          ParentFont = False
+        end
+      end
+      object MasterData1: TfrxMasterData
+        Height = 22.677180000000000000
+        Top = 294.803340000000000000
+        Width = 718.110700000000000000
+        RowCount = 0
+      end
+    end
+  end
+  object frxDBVenda: TfrxDBDataset
+    UserName = 'frxDBVenda'
+    CloseDataSource = False
+    DataSet = cdsListagemVenda
+    BCDToCurrency = False
+    Left = 320
+    Top = 501
   end
 end
