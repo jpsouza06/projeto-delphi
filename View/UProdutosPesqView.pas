@@ -167,10 +167,11 @@ begin
 
          if(cdsProduto.RecordCount = 0) then
          begin
-            if(edtDescricao.CanFocus) then
-               edtDescricao.SetFocus;
 
             TMessageUtil.Alerta('Nenhum produto encontrada para este filtro.');
+
+            if(edtDescricao.CanFocus) then
+               edtDescricao.SetFocus;
          end
          else
          begin

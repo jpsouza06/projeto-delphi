@@ -2,7 +2,7 @@ object frmVendasPesq: TfrmVendasPesq
   Left = 469
   Top = 183
   Width = 524
-  Height = 339
+  Height = 328
   Caption = 'Pesquisa de Vendas'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,7 +14,6 @@ object frmVendasPesq: TfrmVendasPesq
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
-  OnClose = FormClose
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   OnShow = FormShow
@@ -22,7 +21,7 @@ object frmVendasPesq: TfrmVendasPesq
   TextHeight = 13
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 282
+    Top = 271
     Width = 508
     Height = 19
     Panels = <
@@ -35,7 +34,7 @@ object frmVendasPesq: TfrmVendasPesq
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 241
+    Top = 230
     Width = 508
     Height = 41
     Align = alBottom
@@ -151,15 +150,15 @@ object frmVendasPesq: TfrmVendasPesq
   end
   object grbGrid: TGroupBox
     Left = 0
-    Top = 101
+    Top = 99
     Width = 508
-    Height = 140
+    Height = 131
     Align = alBottom
     Caption = 'Resultado da busca'
     TabOrder = 2
     object dbgVenda: TDBGrid
       Left = 2
-      Top = 15
+      Top = 6
       Width = 504
       Height = 123
       Align = alBottom
@@ -215,7 +214,7 @@ object frmVendasPesq: TfrmVendasPesq
     Left = 0
     Top = 0
     Width = 508
-    Height = 101
+    Height = 99
     Align = alClient
     Caption = 'Pesquisar'
     TabOrder = 3
@@ -307,7 +306,7 @@ object frmVendasPesq: TfrmVendasPesq
     object edtClienteID: TEdit
       Left = 143
       Top = 51
-      Width = 69
+      Width = 65
       Height = 21
       CharCase = ecUpperCase
       TabOrder = 2

@@ -48,7 +48,6 @@ type
       Shift: TShiftState);
     procedure edtDataFinalKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
      vKey :Word;
@@ -448,13 +447,6 @@ begin
 
    end;
    Result := True;
-end;
-
-procedure TfrmVendasPesq.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
-   Action := caFree;
-   frmVendasPesq := nil;
 end;
 
 end.

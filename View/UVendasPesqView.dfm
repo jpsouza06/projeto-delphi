@@ -1,8 +1,8 @@
 object frmVendasPesq: TfrmVendasPesq
   Left = 469
   Top = 183
-  Width = 524
-  Height = 328
+  Width = 528
+  Height = 330
   Caption = 'Pesquisa de Vendas'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,8 +21,8 @@ object frmVendasPesq: TfrmVendasPesq
   TextHeight = 13
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 271
-    Width = 508
+    Top = 273
+    Width = 512
     Height = 19
     Panels = <
       item
@@ -34,8 +34,8 @@ object frmVendasPesq: TfrmVendasPesq
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 230
-    Width = 508
+    Top = 232
+    Width = 512
     Height = 41
     Align = alBottom
     TabOrder = 1
@@ -150,17 +150,17 @@ object frmVendasPesq: TfrmVendasPesq
   end
   object grbGrid: TGroupBox
     Left = 0
-    Top = 99
-    Width = 508
+    Top = 101
+    Width = 512
     Height = 131
     Align = alBottom
     Caption = 'Resultado da busca'
     TabOrder = 2
     object dbgVenda: TDBGrid
       Left = 2
-      Top = 6
-      Width = 504
-      Height = 123
+      Top = 16
+      Width = 508
+      Height = 113
       Align = alBottom
       DataSource = dtsVendas
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgCancelOnExit]
@@ -213,8 +213,8 @@ object frmVendasPesq: TfrmVendasPesq
   object grbPesquisar: TGroupBox
     Left = 0
     Top = 0
-    Width = 508
-    Height = 99
+    Width = 512
+    Height = 101
     Align = alClient
     Caption = 'Pesquisar'
     TabOrder = 3

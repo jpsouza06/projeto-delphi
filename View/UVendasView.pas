@@ -48,15 +48,12 @@ type
     cdsListagemVenda: TClientDataSet;
     frxListagemVenda: TfrxReport;
     frxDBVenda: TfrxDBDataset;
-    cdsListagemVendaID: TStringField;
     cdsListagemVendaData: TStringField;
     cdsListagemVendaID_Cliente: TStringField;
     cdsListagemVendaClienteNome: TStringField;
     cdsListagemVendaTotalVenda: TFloatField;
-    cdsListagemVendaDescricaoProduto: TStringField;
-    cdsListagemVendaQuantidadeProduto: TIntegerField;
-    cdsListagemVendaValorProduto: TFloatField;
-    cdsListagemVendaValorItem: TFloatField;
+    cdsListagemVendaID: TStringField;
+    frxDBVendaItens: TfrxDBDataset;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -78,6 +75,7 @@ type
     procedure btnPesquisarClick(Sender: TObject);
     procedure dbgVendaKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure btnListarClick(Sender: TObject);
   private
     { Private declarations }
      vKey : Word;
@@ -156,11 +154,12 @@ begin
    btnAlterar.Enabled   := (vEstadoTela in [etPadrao]);
    btnConsultar.Enabled := (vEstadoTela in [etPadrao]);
    btnPesquisar.Enabled := (vEstadoTela in [etPadrao]);
+   btnListar.Enabled    := (vEstadoTela in [etPadrao]);
 
    btnConfirmar.Enabled :=
-      vEstadoTela in [etIncluir, etAlterar, etConsultar];
+      vEstadoTela in [etIncluir, etAlterar, etConsultar, etListar];
    btnCancelar.Enabled :=
-      vEstadoTela in [etIncluir, etAlterar, etConsultar];
+      vEstadoTela in [etIncluir, etAlterar, etConsultar, etListar];
    btnLimpar.Enabled := vEstadoTela in [etIncluir];
    btnCliente.Enabled := vEstadoTela in [etIncluir, etAlterar];
 
@@ -254,14 +253,6 @@ begin
 
           frmVendasPesq.ShowModal;
 
-//          if (frmVendasPesq = nil) and (frmVendasPesq.mVendaID = 0) then
-//          begin
-//             vEstadoTela := etPadrao;
-//             DefineEstadoTela;
-//
-//             Exit;
-//          end;
-
           if (frmVendasPesq.mVendaID <> 0) then
           begin
              edtNVenda.Text := IntToStr(frmVendasPesq.mVendaID);
@@ -282,6 +273,23 @@ begin
           frmVendasPesq.mClienteID := 0;
 
        end;
+
+       etListar:
+       begin
+          stbBarraStatus.Panels[0].Text := 'Listar';
+
+          if (edtNVenda.Text <> EmptyStr) then
+             ProcessaListagem
+          else
+          begin
+             lblNVenda.Enabled := True;
+             edtNVenda.Enabled := True;
+
+             if edtNVenda.CanFocus then
+                edtNVenda.SetFocus;
+          end;
+       end;
+
    end;
 
 end;
@@ -719,8 +727,8 @@ begin
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
          etAlterar: Result := ProcessaAlteracao;
-//         etExcluir: Result := ProcessaExclusao;
          etConsultar: Result := ProcessaConsulta;
+         etListar: Result := ProcessaListagem;
       end;
 
       if not Result then
@@ -743,11 +751,18 @@ begin
          TMessageUtil.Informacao('Venda cadastrada com sucesso.'#13+
          'Codigo cadastrado: '+ IntToStr(vObjVenda.Id));
 
+         edtNVenda.Text := IntToStr(vObjVenda.Id);
+
+         if (TMessageUtil.Pergunta('Deseja imprimir a nota?')) then
+            ProcessaListagem;
+
          vEstadoTela := etPadrao;
          DefineEstadoTela;
 
          Result := True;
       end;
+
+
    except
       on E: Exception do
       begin
@@ -802,6 +817,7 @@ begin
       end;
       if (vObjVenda = nil) then
          Exit;
+
 
       vObjVenda.ID_Cliente := StrToInt(edtClienteID.Text);
       vObjVenda.DataVenda  := StrToDate(edtDataVenda.Text);
@@ -864,8 +880,12 @@ begin
       if vEstadoTela = etAlterar then
          xID_Venda := StrToIntDef(edtNVenda.Text, 0);
 
+      cdsVenda.Last;
+      if (cdsVendaID.Value = 0) then
+         cdsVenda.Delete;
+
       cdsVenda.First;
-      for i := 0 to pred(cdsVenda.RecordCount - 1) do
+      for i := 0 to pred(cdsVenda.RecordCount) do
       begin
          xVendaItem               := TVendaItem.Create;
          xVendaItem.ID_Venda      := xID_Venda;
@@ -876,6 +896,13 @@ begin
 
          cdsVenda.Next;
          vObjColVendaItem.Add(xVendaItem);
+      end;
+
+      cdsVenda.Last;
+
+      if (cdsVendaID.Value = 0) then
+      begin
+         cdsVenda.Delete;
       end;
 
       Result := True;
@@ -1104,23 +1131,25 @@ begin
       if (not cdsListagemVenda.Active) then
          Exit;
 
-      for xAux := 0 to pred(cdsVenda.RecordCount) do
+      cdsVenda.Open;
+      cdsVenda.First;
+
+      if (cdsVendaID.Value = 0) then
       begin
-
-         cdsListagemVenda.Append;
-
-         cdsListagemVendaID.Value   := edtNVenda.Text;
-         cdsListagemVendaData.Value := edtDataVenda.Text;
-         cdsListagemVendaID_Cliente.Value := edtClienteID.Text;
-         cdsListagemVendaClienteNome.Text := edtClienteNome.Text;
-         cdsListagemVendaTotalVenda.Value := edtTotalVenda.Value;
-         cdsListagemVendaDescricaoProduto.Text := cdsVendaDescricao.Text;
-         cdsListagemVendaQuantidadeProduto.Value := cdsVendaQuantidade.Value;
-         cdsListagemVendaValorProduto.Value := cdsVendaPreco.Value;
-         cdsListagemVendaValorItem.Value := cdsVendaQuantidade.Value * cdsVendaPreco.Value;
-
-         cdsListagemVenda.Post;
+         ProcessaConsulta;
+         Exit;
       end;
+
+      cdsListagemVenda.Append;
+
+      cdsListagemVendaID.Value         := edtNVenda.Text;
+      cdsListagemVendaData.Value       := edtDataVenda.Text;
+      cdsListagemVendaID_Cliente.Value := edtClienteID.Text;
+      cdsListagemVendaClienteNome.Text := edtClienteNome.Text;
+      cdsListagemVendaTotalVenda.Value := edtTotalVenda.Value;
+
+      cdsListagemVenda.Post;
+
 
 
 
@@ -1136,6 +1165,12 @@ begin
 
       Result := True;
    end;
+end;
+
+procedure TfrmVendas.btnListarClick(Sender: TObject);
+begin
+   vEstadoTela := etListar;
+   DefineEstadoTela;
 end;
 
 end.
