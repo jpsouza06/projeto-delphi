@@ -751,6 +751,8 @@ begin
          TMessageUtil.Informacao('Venda cadastrada com sucesso.'#13+
          'Codigo cadastrado: '+ IntToStr(vObjVenda.Id));
 
+         edtNVenda.Text := IntToStr(vObjVenda.Id);
+
          if (TMessageUtil.Pergunta('Deseja imprimir a nota?')) then
             ProcessaListagem;
 
@@ -815,6 +817,7 @@ begin
       end;
       if (vObjVenda = nil) then
          Exit;
+
 
       vObjVenda.ID_Cliente := StrToInt(edtClienteID.Text);
       vObjVenda.DataVenda  := StrToDate(edtDataVenda.Text);

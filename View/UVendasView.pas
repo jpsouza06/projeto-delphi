@@ -39,7 +39,6 @@ type
     lblTotalGeral: TLabel;
     btnConsultar: TBitBtn;
     btnIncluir: TBitBtn;
-    btnAlterar: TBitBtn;
     btnPesquisar: TBitBtn;
     btnSair: TBitBtn;
     edtTotalVenda: TNumEdit;
@@ -99,7 +98,6 @@ type
 
      function ProcessaConfirmacao     : Boolean;
      function ProcessaInclusao        : Boolean;
-     function ProcessaAlteracao       : Boolean;
      function ProcessaConsulta        : Boolean;
      function ProcessaListagem        : Boolean;
 
@@ -151,17 +149,16 @@ end;
 procedure TfrmVendas.DefineEstadoTela;
 begin
    btnIncluir.Enabled   := (vEstadoTela in [etPadrao]);
-   btnAlterar.Enabled   := (vEstadoTela in [etPadrao]);
    btnConsultar.Enabled := (vEstadoTela in [etPadrao]);
    btnPesquisar.Enabled := (vEstadoTela in [etPadrao]);
    btnListar.Enabled    := (vEstadoTela in [etPadrao]);
 
    btnConfirmar.Enabled :=
-      vEstadoTela in [etIncluir, etAlterar, etConsultar, etListar];
+      vEstadoTela in [etIncluir, etConsultar, etListar];
    btnCancelar.Enabled :=
-      vEstadoTela in [etIncluir, etAlterar, etConsultar, etListar];
+      vEstadoTela in [etIncluir, etConsultar, etListar];
    btnLimpar.Enabled := vEstadoTela in [etIncluir];
-   btnCliente.Enabled := vEstadoTela in [etIncluir, etAlterar];
+   btnCliente.Enabled := vEstadoTela in [etIncluir];
 
    case vEstadoTela of
       etPadrao:
@@ -193,32 +190,6 @@ begin
             edtClienteId.SetFocus;
        end;
 
-       etAlterar:
-       begin
-          stbBarraStatus.Panels[0].Text := 'Alteração';
-
-          if (edtNVenda.Text <> EmptyStr) then
-          begin
-             CamposEnabled(True);
-
-             edtNVenda.Enabled    := False;
-             btnAlterar.Enabled   := False;
-             btnConfirmar.Enabled := True;
-
-             dbgVenda.SelectedIndex := 0;
-             if (dbgVenda.CanFocus) then
-                dbgVenda.SetFocus;
-          end
-          else
-          begin
-             lblNVenda.Enabled := True;
-             edtNVenda.Enabled := True;
-
-             if (edtNVenda.CanFocus) then
-                edtNVenda.SetFocus;
-          end;
-       end;
-
        etConsultar:
        begin
           stbBarraStatus.Panels[0].Text := 'Consulta';
@@ -228,11 +199,10 @@ begin
           if (edtNVenda.Text <> EmptyStr) then
           begin
              edtNVenda.Enabled  := False;
-             btnAlterar.Enabled := True;
              btnConfirmar.Enabled := False;
 
-             if (btnAlterar.CanFocus) then
-                btnAlterar.SetFocus;
+             if (btnConsultar.CanFocus) then
+                btnConsultar.SetFocus;
           end
           else
           begin
@@ -726,7 +696,6 @@ begin
    try
       case vEstadoTela of
          etIncluir: Result := ProcessaInclusao;
-         etAlterar: Result := ProcessaAlteracao;
          etConsultar: Result := ProcessaConsulta;
          etListar: Result := ProcessaListagem;
       end;
@@ -1051,35 +1020,6 @@ begin
    end;
 end;
 
-function TfrmVendas.ProcessaAlteracao: Boolean;
-begin
-   try
-      Result := False;
-
-      if (edtNVenda.Text = EmptyStr) then
-      begin
-         ProcessaConsulta;
-         Exit;
-      end;
-
-      if ProcessaVenda_Item then
-      begin
-        TMessageUtil.Informacao('Dados alterados com sucesso.');
-
-        vEstadoTela := etPadrao;
-        DefineEstadoTela;
-        Result := True
-      end;
-   except
-      on E: Exception do
-      begin
-         Raise Exception.Create(
-            'Falha ao alterar os dados da venda [View]: '#13+
-            e.Message)
-      end;
-   end;
-end;
-
 procedure TfrmVendas.btnConsultarClick(Sender: TObject);
 begin
    vEstadoTela := etConsultar;
@@ -1115,12 +1055,14 @@ procedure TfrmVendas.dbgVendaKeyDown(Sender: TObject; var Key: Word;
 begin
    if (vKey = 46) then
    begin
-      cdsVenda.Delete;
 
-      dbgVenda.SelectedIndex := 0;
-      cdsVenda.Last;
-      if (dbgVenda.CanFocus) then
-         dbgVenda.SetFocus;
+      if(TMessageUtil.Pergunta('Deseja realmente excluir o produto?')) then
+      begin
+         dbgVenda.SelectedIndex := 0;
+         cdsVenda.Last;
+         if (dbgVenda.CanFocus) then
+            dbgVenda.SetFocus;
+      end;
    end;
 end;
 

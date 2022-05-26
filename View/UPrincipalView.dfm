@@ -1,7 +1,7 @@
 object frmPrincipal: TfrmPrincipal
   Left = 85
   Top = 164
-  Width = 859
+  Width = 838
   Height = 659
   Caption = 'Novo Sistema'
   Color = clWhite
@@ -21,8 +21,8 @@ object frmPrincipal: TfrmPrincipal
   object imgLogo: TImage
     Left = 0
     Top = 0
-    Width = 843
-    Height = 581
+    Width = 822
+    Height = 582
     Align = alClient
     Center = True
     Picture.Data = {
@@ -1105,8 +1105,8 @@ object frmPrincipal: TfrmPrincipal
   end
   object stbBarraStatus: TStatusBar
     Left = 0
-    Top = 581
-    Width = 843
+    Top = 582
+    Width = 822
     Height = 19
     Panels = <
       item

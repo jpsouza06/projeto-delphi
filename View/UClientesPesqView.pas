@@ -158,14 +158,17 @@ begin
          begin
             for xAux := 0 to pred(xListaCliente.Count) do
             begin
-               cdsCliente.Append;
-               cdsClienteID.Value   := xListaCliente.Retorna(xAux).Id;
-               cdsClienteNome.Value := xListaCliente.Retorna(xAux).Nome;
-               cdsClienteAtivo.Value :=
-                  IfThen(xListaCliente.Retorna(xAux).Ativo, 1, 0);
-               cdsClienteDescricaoAtivo.Value :=
-                  IfThen(xListaCliente.Retorna(xAux).Ativo, 'Sim', 'Não');
-               cdsCliente.Post;
+
+               if(xListaCliente.Retorna(xAux).Ativo = True) then
+               begin
+                  cdsCliente.Append;
+                  cdsClienteID.Value             := xListaCliente.Retorna(xAux).Id;
+                  cdsClienteNome.Value           := xListaCliente.Retorna(xAux).Nome;
+                  cdsClienteAtivo.Value          := 1;
+                  cdsClienteDescricaoAtivo.Value := 'Sim';
+                  cdsCliente.Post;
+               end;
+
             end;
          end;
 

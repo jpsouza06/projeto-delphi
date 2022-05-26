@@ -45,7 +45,6 @@ type
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure btnExportarClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
      vKey : Word;
@@ -328,15 +327,6 @@ begin
    finally
       xExcel := Unassigned;
    end;
-end;
-
-
-
-procedure TfrmClientesPesq.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
-   Action := caFree;
-   frmClientesPesq := nil;
 end;
 
 end.
